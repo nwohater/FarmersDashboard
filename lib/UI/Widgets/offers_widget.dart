@@ -1,8 +1,5 @@
-// UI/Widgets/special_offer_widget.dart
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-// Ensure this path is correct if gamedata_model.dart is not in a 'Models' subfolder
-// relative to this widget file.
 import '../../Models/gamedata_model.dart'; // Or the correct relative path
 
 class SpecialOfferWidget extends StatelessWidget {

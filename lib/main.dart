@@ -1,14 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:farmerdashboard/UI/dashboard.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '/Utils/server_config_service.dart';
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  final configService = ServerConfigService();
-  await configService.migrateFromOldActiveConfig();
-
   runApp(const MyApp());
 }
 
@@ -33,5 +27,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
-
