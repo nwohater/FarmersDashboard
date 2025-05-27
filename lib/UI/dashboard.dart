@@ -1,4 +1,3 @@
-import 'package:farmerdashboard/models/server_config_model.dart';
 import 'package:flutter/material.dart';
 import 'package:farmerdashboard/Utils/sftp_sync.dart';
 import 'package:farmerdashboard/Models/gamedata_model.dart';
@@ -21,24 +20,8 @@ class _DashBoardState extends State<DashBoard> {
   @override
   void initState() {
     super.initState();
-    //_checkConnections();
     _loadData();
   }
-
-  // Future<void> _checkConnections() async {
-  //   // Somewhere in your app's startup logic (e.g., in your main widget's initState or a splash screen)
-  //   final serverConfigService = ServerConfigService();
-  //   ServerConfig? defaultConnection = await serverConfigService.loadDefaultConfig();
-  //
-  //   if (defaultConnection != null) {
-  //     print('Using default connection: ${defaultConnection.profileName}');
-  //     // Proceed to use defaultConnection.host, defaultConnection.username, etc.
-  //     // for your SFTP operations in sftp_sync.dart
-  //   } else {
-  //     print('No default connection set. Please configure one.');
-  //     // Navigate to a settings screen to allow the user to add/select a default configuration.
-  //   }
-  // }
 
   Future<void> _loadData() async {
     // Connect to sftp server and download
