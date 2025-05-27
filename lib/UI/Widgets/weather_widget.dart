@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-
-
 class WeatherWidget extends StatelessWidget {
   final String condition;
   final double temperature;

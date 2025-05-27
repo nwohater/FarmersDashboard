@@ -4,10 +4,6 @@ import 'package:farmerdashboard/Utils/sftp_sync.dart';
 import 'package:farmerdashboard/Models/gamedata_model.dart';
 import 'package:farmerdashboard/UI/Widgets/weather_widget.dart';
 import 'package:farmerdashboard/UI/Widgets/date_widget.dart';
-
-// Assuming offers_widget.dart contains SpecialOfferWidget
-import '../Models/server_config_model.dart' hide ServerConfig;
-import '../Utils/server_config_service.dart';
 import 'Widgets/farm_widget.dart';
 import 'Widgets/forecast_widget.dart';
 import 'Widgets/offers_widget.dart'; // Or SpecialOfferWidget if that's the file name
