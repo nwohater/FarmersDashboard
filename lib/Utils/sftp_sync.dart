@@ -4,41 +4,45 @@ import 'package:dartssh2/dartssh2.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:farmerdashboard/Models/gamedata_model.dart';
 
- Future<GameData?> downloadJsonFile() async {
-   // Setup SSH client
-   final socket = await SSHSocket.connect('viper.fragify.net', 2025);
-   final client = SSHClient(
-     socket,
-     username: '5pdtfqox.53649089',
-     onPasswordRequest: () => '73!Goats',
-   );
+Future<GameData?> downloadJsonFile(Map<String, dynamic> connection) async {
+  try {
+    // Setup SSH client
+    final socket = await SSHSocket.connect(
+      connection['host'],
+      connection['port'],
+    );
 
-   // Start SFTP session
-   final sftp = await client.sftp();
+    final client = SSHClient(
+      socket,
+      username: connection['username'],
+      onPasswordRequest: () => connection['password'],
+    );
 
-   // Open remote file
-   try {
-     final remoteFile = await sftp.open(
-         '/serverProfile/farmersDB.json');
-     final content = await remoteFile.readBytes();
-     await remoteFile.close();
+    // Start SFTP session
+    final sftp = await client.sftp();
 
-     // Save it locally
-     final dir = await getApplicationDocumentsDirectory();
-     final file = File('${dir.path}/farmersDB.json');
-     await file.writeAsBytes(content);
+    // Open remote file
+    final remoteFile = await sftp.open(connection['path']);
+    final content = await remoteFile.readBytes();
+    await remoteFile.close();
 
-     // Parse JSON if needed
-     //final jsonMap = jsonDecode(utf8.decode(content));
+    // Save it locally
+    final dir = await getApplicationDocumentsDirectory();
+    final file = File('${dir.path}/farmersDB.json');
+    await file.writeAsBytes(content);
 
-     // Clean up
-     client.close();
-   }
-   catch(e) {
-     print (e);
-   }
-   return null;
- }
+    // Optionally parse JSON
+    // final jsonMap = jsonDecode(utf8.decode(content));
+    // return GameData.fromJson(jsonMap);
+
+    // Clean up
+    client.close();
+  } catch (e) {
+    print('❌ Error in downloadJsonFile: $e');
+  }
+
+  return null;
+}
 
 
 

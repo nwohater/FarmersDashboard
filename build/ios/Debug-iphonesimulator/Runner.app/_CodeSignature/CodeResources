@@ -46,7 +46,7 @@
 		</data>
 		<key>Frameworks/App.framework/App</key>
 		<data>
-		5kyrT8ck3nHr0bMmuhVnSgS4yl0=
+		mwGjSdWj7/Md893WoS9VL4+cT5w=
 		</data>
 		<key>Frameworks/App.framework/Info.plist</key>
 		<data>
@@ -54,7 +54,7 @@
 		</data>
 		<key>Frameworks/App.framework/_CodeSignature/CodeResources</key>
 		<data>
-		3tpjC0MbYREll47fz94Kfchar7Y=
+		dI6eFRwu06ogcNW6l1/7fhq1Fg8=
 		</data>
 		<key>Frameworks/App.framework/flutter_assets/AssetManifest.bin</key>
 		<data>
@@ -70,7 +70,7 @@
 		</data>
 		<key>Frameworks/App.framework/flutter_assets/NOTICES.Z</key>
 		<data>
-		+nuXF8vXazdlxQ9PmI36nHjeMaM=
+		bZPs0LCqw5NU/7CabQ8jzxTC3OA=
 		</data>
 		<key>Frameworks/App.framework/flutter_assets/NativeAssetsManifest.json</key>
 		<data>
@@ -126,7 +126,7 @@
 		</data>
 		<key>Frameworks/App.framework/flutter_assets/kernel_blob.bin</key>
 		<data>
-		WrE2j7eDmvlD3GcPDow7q4q6bGc=
+		qYl3FDH+3deyKmFj4qglTKq0lMc=
 		</data>
 		<key>Frameworks/App.framework/flutter_assets/packages/cupertino_icons/assets/CupertinoIcons.ttf</key>
 		<data>
@@ -272,6 +272,26 @@
 		<data>
 		6uLTlq7fgHHWA8emYDf4ImHC+AY=
 		</data>
+		<key>Frameworks/sqflite_darwin.framework/Info.plist</key>
+		<data>
+		PO72UreZXG/QWV+fN/HViQJUgD8=
+		</data>
+		<key>Frameworks/sqflite_darwin.framework/_CodeSignature/CodeResources</key>
+		<data>
+		oWWl09QtryssXKB49gbLQH+nLYc=
+		</data>
+		<key>Frameworks/sqflite_darwin.framework/sqflite_darwin</key>
+		<data>
+		QoE5WutupCLTK9ypXXgdvhv7cXk=
+		</data>
+		<key>Frameworks/sqflite_darwin.framework/sqflite_darwin_privacy.bundle/Info.plist</key>
+		<data>
+		zxcuJuY27PHPW0cRUIvmtipcFSU=
+		</data>
+		<key>Frameworks/sqflite_darwin.framework/sqflite_darwin_privacy.bundle/PrivacyInfo.xcprivacy</key>
+		<data>
+		YIiJ5tHvqBeSpBm2mcfVZdaGz3E=
+		</data>
 		<key>Info.plist</key>
 		<data>
 		3OQd1OJNwGoLSN/+yKFED1sKf94=
@@ -282,7 +302,7 @@
 		</data>
 		<key>Runner.debug.dylib</key>
 		<data>
-		XWBe6PjuOfyPOJF5Rh0wuJ8zmIo=
+		AHP/jHn/9b6Ig0eXiEPKIIVOnCY=
 		</data>
 		<key>__preview.dylib</key>
 		<data>
@@ -365,7 +385,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			wixdy7TUFBxzqnPhGl6NI7UqsrPm7C4PoM8EM1w4Vec=
+			v5wYmqsjOqb5rsMJfXYj2VV/jUxu5yUdK95EoPX8Ik4=
 			</data>
 		</dict>
 		<key>Frameworks/App.framework/Info.plist</key>
@@ -379,7 +399,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			V976EsYsJmkeRGkuh4bPBRm9BJPQ0S4r3lASMRGNUSQ=
+			orFaJ8OunfRLgP1dZCCe+C1vXgtKyj00itEnquSR7as=
 			</data>
 		</dict>
 		<key>Frameworks/App.framework/flutter_assets/AssetManifest.bin</key>
@@ -407,7 +427,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			/N9Hr+g6l3l5gt+P72+g2iu3ICbb47K4ixCNoMvSA/M=
+			YjYR+UwCblN0Kk7Xx02BWSHSHGtE19YGW0sf4ICQJUg=
 			</data>
 		</dict>
 		<key>Frameworks/App.framework/flutter_assets/NativeAssetsManifest.json</key>
@@ -505,7 +525,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			Nzq+A/wQ7YNe8FKZcUmbFBJPP+lZhvdVOl861HeUZLQ=
+			Dp28pj737Nvwy8+9/IqgyJcA3u8G/tdXylc72yZZyaQ=
 			</data>
 		</dict>
 		<key>Frameworks/App.framework/flutter_assets/packages/cupertino_icons/assets/CupertinoIcons.ttf</key>
@@ -760,11 +780,46 @@
 			BWQouTi9VwGKYAGdFcPB7i+nJ/I2h1mLu9k0hIsYCxo=
 			</data>
 		</dict>
+		<key>Frameworks/sqflite_darwin.framework/Info.plist</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			dLVyxS/2CPdqSGAkQmcI3IRTW4LTJk/HSeyaVe6L7hE=
+			</data>
+		</dict>
+		<key>Frameworks/sqflite_darwin.framework/_CodeSignature/CodeResources</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			HOToAgchiZFTMYed1oHJbTlKcY2h5p6meCLYFBN/ASs=
+			</data>
+		</dict>
+		<key>Frameworks/sqflite_darwin.framework/sqflite_darwin</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			AF2jzrimympoG7q7SGS55leOKFAV1ymsYkLlnD+OQos=
+			</data>
+		</dict>
+		<key>Frameworks/sqflite_darwin.framework/sqflite_darwin_privacy.bundle/Info.plist</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			9v9s4LTNRsS3vbd0J8p9YonPrnqZbHmeIFD1v85mzjw=
+			</data>
+		</dict>
+		<key>Frameworks/sqflite_darwin.framework/sqflite_darwin_privacy.bundle/PrivacyInfo.xcprivacy</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			RyJqKWCN8gatChEOav61p3/1dawd+cdr/bLW37P6/tE=
+			</data>
+		</dict>
 		<key>Runner.debug.dylib</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			aaxUqFn0z/2NxA3Yr/tVl6SdfzCSHBQvIA82kJbaO5U=
+			UULeaPa4Q0hFUcIO21Lw7l1AmwsFnRdoHA8AidIhq7Q=
 			</data>
 		</dict>
 		<key>__preview.dylib</key>
