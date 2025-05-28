@@ -4,9 +4,16 @@ import 'package:dartssh2/dartssh2.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:farmerdashboard/Models/gamedata_model.dart';
 
-Future<GameData?> downloadJsonFile(Map<String, dynamic> connection) async {
+class DownloadResult {
+  final bool success;
+  final String message;
+
+  DownloadResult(this.success, this.message);
+}
+
+
+Future<DownloadResult> downloadJsonFile(Map<String, dynamic> connection) async {
   try {
-    // Setup SSH client
     final socket = await SSHSocket.connect(
       connection['host'],
       connection['port'],
@@ -18,31 +25,25 @@ Future<GameData?> downloadJsonFile(Map<String, dynamic> connection) async {
       onPasswordRequest: () => connection['password'],
     );
 
-    // Start SFTP session
     final sftp = await client.sftp();
 
-    // Open remote file
     final remoteFile = await sftp.open(connection['path']);
     final content = await remoteFile.readBytes();
     await remoteFile.close();
 
-    // Save it locally
     final dir = await getApplicationDocumentsDirectory();
     final file = File('${dir.path}/farmersDB.json');
     await file.writeAsBytes(content);
 
-    // Optionally parse JSON
-    // final jsonMap = jsonDecode(utf8.decode(content));
-    // return GameData.fromJson(jsonMap);
-
-    // Clean up
     client.close();
+
+    return DownloadResult(true, 'Download successful!');
   } catch (e) {
     print('❌ Error in downloadJsonFile: $e');
+    return DownloadResult(false, 'Connection failed: $e');
   }
-
-  return null;
 }
+
 
 
 

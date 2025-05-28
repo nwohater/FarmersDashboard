@@ -60,27 +60,30 @@ class _DashBoardState extends State<DashBoard> {
 
   Future<void> _checkDefaultServer() async {
     final db = SftpDatabase();
-    final defaultConn = await db.getConnections().then((connections) {
-      return connections.firstWhere(
-            (conn) => conn['isdefault'] == 1,
-        orElse: () => {},
-      );
-    });
+    final connections = await db.getConnections();
 
-    if (defaultConn.isNotEmpty) {
-      _defaultConnection = defaultConn;
-    } else {
-      // No default server? Let user select one
+    if (connections.isEmpty) {
+      // No connections at all – let user create one
       await Navigator.push(
         context,
         MaterialPageRoute(builder: (_) => const ServersSelectionScreen()),
       );
-      // Re-check for default server after returning
-      final connections = await db.getConnections();
-      _defaultConnection = connections.firstWhere(
-            (conn) => conn['isdefault'] == 1,
-        orElse: () => {},
-      );
+      // Re-run full initialization after returning
+      await _initializeDashboard();
+      return;
+    }
+
+    // Try to find default connection
+    final defaultConn = connections.firstWhere(
+          (conn) => conn['isdefault'] == 1,
+      orElse: () => {},
+    );
+
+    if (defaultConn.isNotEmpty) {
+      _defaultConnection = defaultConn;
+    } else {
+      // No default, but at least one connection – pick first
+      _defaultConnection = connections.first;
     }
   }
 
@@ -88,7 +91,20 @@ class _DashBoardState extends State<DashBoard> {
     if (_defaultConnection == null) return;
 
     // Pass connection info to the SFTP download method
-    await downloadJsonFile(_defaultConnection!);
+    final result = await downloadJsonFile(_defaultConnection!);
+
+    if (!result.success) {
+      // Show a snackbar to inform the user
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(result.message),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+      }
+      return; // exit if download failed
+    }
 
     final gameData = await loadGameData();
     if (gameData != null) {
@@ -96,10 +112,12 @@ class _DashBoardState extends State<DashBoard> {
         _gameData = gameData;
       });
     } else {
-      print("Failed to load GameData.");
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to load GameData.')),
+          const SnackBar(
+            content: Text('Failed to load GameData.'),
+            backgroundColor: Colors.redAccent,
+          ),
         );
       }
     }
@@ -107,22 +125,48 @@ class _DashBoardState extends State<DashBoard> {
 
   @override
   Widget build(BuildContext context) {
+    final appBar = AppBar(
+      leading: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Image.asset('assets/images/tractor1.png'),
+      ),
+      centerTitle: true,
+      title: const Text(
+        "Farmer's Dashboard",
+        style: TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+          fontSize: 24,
+        ),
+      ),
+      backgroundColor: Colors.green,
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.settings, color: Colors.white),
+          iconSize: 26,
+          tooltip: 'Manage Connections',
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const ServersSelectionScreen(),
+              ),
+            );
+          },
+        ),
+      ],
+    );
+
     if (_loading) {
       return Scaffold(
-        appBar: AppBar(
-          title: const Text("Farmer's Dashboard"),
-          backgroundColor: Colors.green,
-        ),
+        appBar: appBar,
         body: const Center(child: CircularProgressIndicator()),
       );
     }
 
     if (_gameData == null) {
       return Scaffold(
-        appBar: AppBar(
-          title: const Text("Farmer's Dashboard"),
-          backgroundColor: Colors.green,
-        ),
+        appBar: appBar,
         body: const Center(child: Text('No data to display.')),
       );
     }
@@ -138,44 +182,14 @@ class _DashBoardState extends State<DashBoard> {
     final List<SpecialOffer> specialOffers = _gameData!.specialOffers;
 
     return Scaffold(
-      appBar: AppBar(
-        leading: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Image.asset('assets/images/tractor1.png'),
-        ),
-        centerTitle: true,
-        title: const Text(
-          "Farmer's Dashboard",
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 26,
-          ),
-        ),
-        backgroundColor: Colors.green,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings, color: Colors.white),
-            iconSize: 30,
-            tooltip: 'Manage Connections',
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const ServersSelectionScreen(),
-                ),
-              );
-            },
-          ),
-        ],
-      ),
+      appBar: appBar,
       body: Stack(
         children: [
           Positioned.fill(
             child: Image.asset(
               'assets/images/background2.png',
               fit: BoxFit.cover,
-              opacity: const AlwaysStoppedAnimation(0.1),
+              opacity: const AlwaysStoppedAnimation(0.2),
             ),
           ),
           Padding(
@@ -187,9 +201,11 @@ class _DashBoardState extends State<DashBoard> {
                 maxScale: 2.0,
                 child: ListView(
                   children: [
-                    // 🟩 Added: Server name and switch icon row
                     if (_defaultConnection != null &&
-                        (_defaultConnection!['servername']?.toString().isNotEmpty ?? false))
+                        (_defaultConnection!['servername']
+                            ?.toString()
+                            .isNotEmpty ??
+                            false))
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
                         child: Row(
@@ -198,24 +214,18 @@ class _DashBoardState extends State<DashBoard> {
                             Text(
                               '${_defaultConnection!['servername']}',
                               style: const TextStyle(
-                                fontSize: 28,
+                                fontSize: 24,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.teal,
                               ),
                             ),
                             const SizedBox(width: 8),
-                            ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.green,
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                              ),
-                              onPressed: _pickServer,
-                              child: const Text(
-                                'Switch',
-                                style: TextStyle(color: Colors.white, fontSize: 14),
+                            GestureDetector(
+                              onTap: _pickServer,
+                              child: Image.asset(
+                                'assets/images/switch.png',
+                                width: 24,
+                                height: 24,
                               ),
                             ),
                           ],
@@ -225,46 +235,44 @@ class _DashBoardState extends State<DashBoard> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Column(
-                          children: [
-                            DateWidget(Date: date, Time: _gameData!.time),
-                            const Divider(height: 20, thickness: 1),
-                          ],
+                        DateWidget(Date: date, Time: _gameData!.time),
+                        const Divider(height: 20, thickness: 1),
+                        const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text(
+                            "Current Weather",
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.teal,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
                         ),
-                        Column(
-                          children: [
-                            const Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Text(
-                                "Current Weather",
+                        WeatherWidget(
+                          condition: condition,
+                          temperature: temperatureF,
+                        ),
+                        const Divider(height: 20, thickness: 1),
+                        if (_gameData!.weather.forecast.isNotEmpty) ...[
+                          const SizedBox(height: 20),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Image.asset(
+                                'assets/images/forecast.png',
+                                width: 40,
+                                height: 40,
+                              ),
+                              const Text(
+                                "Weather Forecast",
                                 style: TextStyle(
-                                  fontSize: 20,
+                                  fontSize: 22,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.teal,
                                 ),
-                                textAlign: TextAlign.center,
                               ),
-                            ),
-                            WeatherWidget(
-                              condition: condition,
-                              temperature: temperatureF,
-                            ),
-                            const Divider(height: 20, thickness: 1),
-                          ],
-                        ),
-                        if (_gameData!.weather.forecast.isNotEmpty) ...[
-                          const SizedBox(height: 20),
-                          const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 8.0),
-                            child: Text(
-                              "Weather Forecast",
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.teal,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
+                            ],
                           ),
                           const SizedBox(height: 10),
                           ForecastWidget(
@@ -282,11 +290,10 @@ class _DashBoardState extends State<DashBoard> {
                               width: 40,
                               height: 40,
                             ),
-                            const SizedBox(width: 5),
                             const Text(
                               "The Farm Report",
                               style: TextStyle(
-                                fontSize: 24,
+                                fontSize: 22,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.teal,
                               ),
@@ -320,11 +327,10 @@ class _DashBoardState extends State<DashBoard> {
                               width: 50,
                               height: 50,
                             ),
-                            const SizedBox(width: 8),
                             const Text(
-                              'Today\'s Special Offers',
+                              'Special Deals',
                               style: TextStyle(
-                                fontSize: 24,
+                                fontSize: 22,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.teal,
                               ),
@@ -342,7 +348,7 @@ class _DashBoardState extends State<DashBoard> {
                             padding: const EdgeInsets.symmetric(vertical: 20.0),
                             child: Center(
                               child: Text(
-                                'No special offers available at the moment.',
+                                'No deals available at the moment.',
                                 style: TextStyle(fontSize: 16, color: Colors.grey[600]),
                               ),
                             ),

@@ -22,7 +22,7 @@ class DateWidget extends StatelessWidget {
         ),
         Text(
           Time, // Display the current time
-          style: TextStyle(fontSize: 20, color: Colors.grey[600]),
+          style: TextStyle(fontSize: 20, color: Colors.grey, fontWeight: FontWeight.bold),
         ),
       ],
     );

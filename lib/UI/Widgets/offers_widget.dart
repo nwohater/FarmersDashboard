@@ -25,7 +25,7 @@ class SpecialOfferWidget extends StatelessWidget {
           children: [
             Text(
               offer.name, // From your SpecialOffer model
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             if (offer.brand.isNotEmpty) // From your SpecialOffer model
               Padding(

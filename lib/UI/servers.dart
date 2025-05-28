@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import '/Utils/sqlite.dart'; // your database helper file
+import '/Utils/sqlite.dart';
 import '/UI/Widgets/server_select_dialog.dart';
 
 class ServersSelectionScreen extends StatefulWidget {
   const ServersSelectionScreen({Key? key}) : super(key: key);
 
   @override
-  _ServersSelectionScreenState createState() => _ServersSelectionScreenState();
+  _ServersSelectionScreenState createState() =>
+      _ServersSelectionScreenState();
 }
 
 class _ServersSelectionScreenState extends State<ServersSelectionScreen> {
@@ -39,6 +40,34 @@ class _ServersSelectionScreenState extends State<ServersSelectionScreen> {
     }
   }
 
+  Future<void> _deleteConnection(int id) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Connection'),
+        content: const Text('Are you sure you want to delete this connection?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      final db = SftpDatabase();
+      await db.deleteConnection(id);
+      _loadConnections();
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,16 +77,25 @@ class _ServersSelectionScreenState extends State<ServersSelectionScreen> {
         itemBuilder: (context, index) {
           final conn = _connections[index];
           return ListTile(
-            // Show servername if it exists, fallback to host
             title: Text(conn['servername']?.toString().isNotEmpty == true
                 ? conn['servername']
                 : conn['host']),
-            subtitle: Text('${conn['username']}@${conn['host']}:${conn['port']}'),
-            trailing: IconButton(
-              icon: const Icon(Icons.edit),
-              onPressed: () {
-                _showAddEditDialog(existing: conn);
-              },
+            subtitle:
+            Text('${conn['username']}@${conn['host']}:${conn['port']}'),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.edit, color: Colors.teal),
+                  onPressed: () {
+                    _showAddEditDialog(existing: conn);
+                  },
+                ),
+                IconButton(
+                  icon: const Icon(Icons.delete, color: Colors.red),
+                  onPressed: () => _deleteConnection(conn['id']),
+                ),
+              ],
             ),
           );
         },
@@ -70,15 +108,14 @@ class _ServersSelectionScreenState extends State<ServersSelectionScreen> {
   }
 }
 
-// AddEditConnectionDialog updated to include servername
-
 class AddEditConnectionDialog extends StatefulWidget {
   final Map<String, dynamic>? connection;
 
   const AddEditConnectionDialog({Key? key, this.connection}) : super(key: key);
 
   @override
-  _AddEditConnectionDialogState createState() => _AddEditConnectionDialogState();
+  _AddEditConnectionDialogState createState() =>
+      _AddEditConnectionDialogState();
 }
 
 class _AddEditConnectionDialogState extends State<AddEditConnectionDialog> {
@@ -98,10 +135,10 @@ class _AddEditConnectionDialogState extends State<AddEditConnectionDialog> {
         TextEditingController(text: widget.connection?['servername'] ?? '');
     _hostController =
         TextEditingController(text: widget.connection?['host'] ?? '');
-    _portController =
-        TextEditingController(text: widget.connection?['port']?.toString() ?? '22');
-    _pathController =
-        TextEditingController(text: widget.connection?['path'] ?? '/');
+    _portController = TextEditingController(
+        text: widget.connection?['port']?.toString() ?? '2025'); // default 2025
+    _pathController = TextEditingController(
+        text: widget.connection?['path'] ?? '/serverProfile/farmersDB.json'); // default path
     _usernameController =
         TextEditingController(text: widget.connection?['username'] ?? '');
     _passwordController =
@@ -120,27 +157,48 @@ class _AddEditConnectionDialogState extends State<AddEditConnectionDialog> {
     super.dispose();
   }
 
-  void _save() {
-    if (_formKey.currentState!.validate()) {
-      final conn = {
-        'id': widget.connection?['id'],
-        'servername': _servernameController.text.trim(),
-        'host': _hostController.text.trim(),
-        'port': int.tryParse(_portController.text.trim()) ?? 22,
-        'path': _pathController.text.trim(),
-        'username': _usernameController.text.trim(),
-        'password': _passwordController.text.trim(),
-        'isdefault': _isDefault ? 1 : 0,
-      };
-
-      Navigator.of(context).pop(conn);
+  void _save() async {
+    // Validate all fields except isDefault
+    if (_servernameController.text.trim().isEmpty ||
+        _hostController.text.trim().isEmpty ||
+        _portController.text.trim().isEmpty ||
+        _pathController.text.trim().isEmpty ||
+        _usernameController.text.trim().isEmpty ||
+        _passwordController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please fill out all fields before saving.'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+      return; // don’t proceed if any field is empty
     }
+
+    final conn = {
+      'id': widget.connection?['id'],
+      'servername': _servernameController.text.trim(),
+      'host': _hostController.text.trim(),
+      'port': int.tryParse(_portController.text.trim()) ?? 2025,
+      'path': _pathController.text.trim(),
+      'username': _usernameController.text.trim(),
+      'password': _passwordController.text.trim(),
+      'isdefault': _isDefault ? 1 : 0,
+    };
+
+    final db = SftpDatabase();
+
+    if (_isDefault) {
+      await db.setAsDefault(widget.connection?['id'] ?? 0);
+    }
+
+    Navigator.of(context).pop(conn);
   }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(widget.connection == null ? 'Add Connection' : 'Edit Connection'),
+      title: Text(
+          widget.connection == null ? 'Add Connection' : 'Edit Connection'),
       content: SingleChildScrollView(
         child: Form(
           key: _formKey,
@@ -153,7 +211,6 @@ class _AddEditConnectionDialogState extends State<AddEditConnectionDialog> {
               TextFormField(
                 controller: _hostController,
                 decoration: const InputDecoration(labelText: 'Host'),
-                validator: (v) => v == null || v.isEmpty ? 'Required' : null,
               ),
               TextFormField(
                 controller: _portController,
@@ -195,3 +252,4 @@ class _AddEditConnectionDialogState extends State<AddEditConnectionDialog> {
     );
   }
 }
+

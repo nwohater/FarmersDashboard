@@ -40,7 +40,7 @@ class FarmWidget extends StatelessWidget {
           Expanded( // Allows farmName to take available space and wrap if too long
             child: Text(
               farmName,
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.blueGrey[800]),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blueGrey[800]),
               overflow: TextOverflow.ellipsis, // Handle long farm names
             ),
           ),

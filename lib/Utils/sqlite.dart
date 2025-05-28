@@ -12,7 +12,6 @@ class SftpDatabase {
   Future<Database> get database async {
     if (_db != null) return _db!;
 
-    // Initialize the database
     _db = await _initDb();
     return _db!;
   }
@@ -23,8 +22,9 @@ class SftpDatabase {
 
     return await openDatabase(
       path,
-      version: 1,
+      version: 2, // bump version for onUpgrade
       onCreate: _onCreate,
+      onUpgrade: _onUpgrade,
     );
   }
 
@@ -43,7 +43,20 @@ class SftpDatabase {
     ''');
   }
 
-  // Example method to insert a connection record
+  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < newVersion) {
+      final columns =
+      await db.rawQuery("PRAGMA table_info(sftp_connections);");
+      final hasServername =
+      columns.any((c) => c['name'] == 'servername');
+
+      if (!hasServername) {
+        await db.execute(
+            "ALTER TABLE sftp_connections ADD COLUMN servername TEXT DEFAULT '';");
+      }
+    }
+  }
+
   Future<void> insertConnection(Map<String, dynamic> connInfo) async {
     final db = await database;
     await db.insert(
@@ -53,10 +66,14 @@ class SftpDatabase {
     );
   }
 
-  // Example method to retrieve all connections
   Future<List<Map<String, dynamic>>> getConnections() async {
     final db = await database;
     return await db.query('sftp_connections');
+  }
+
+  Future<void> deleteConnection(int id) async {
+    final db = await database;
+    await db.delete('sftp_connections', where: 'id = ?', whereArgs: [id]);
   }
 
   Future<void> closeDb() async {
@@ -65,17 +82,21 @@ class SftpDatabase {
     _db = null;
   }
 
-  Future<Map<String, dynamic>?> getDefaultConnection() async {
+  Future<void> setAsDefault(int id) async {
     final db = await database;
-    final res = await db.query(
+    // Unset default for all connections
+    await db.update(
       'sftp_connections',
-      where: 'isdefault = ?',
-      whereArgs: [1],
-      limit: 1,
+      {'isdefault': 0},
     );
-    return res.isNotEmpty ? res.first : null;
+    // Set default for the specified connection
+    await db.update(
+      'sftp_connections',
+      {'isdefault': 1},
+      where: 'id = ?',
+      whereArgs: [id],
+    );
   }
 
 
 }
-

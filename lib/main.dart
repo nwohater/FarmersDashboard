@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
-          fontFamily: GoogleFonts.amarante().fontFamily,
+          fontFamily: GoogleFonts.roboto().fontFamily,
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         ),
         debugShowCheckedModeBanner: false,
