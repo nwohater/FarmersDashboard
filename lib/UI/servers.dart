@@ -67,11 +67,10 @@ class _ServersSelectionScreenState extends State<ServersSelectionScreen> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('SFTP Connections')),
+      appBar: AppBar(title: const Text('SFTP/FTP Connections')),
       body: ListView.builder(
         itemCount: _connections.length,
         itemBuilder: (context, index) {
@@ -80,9 +79,9 @@ class _ServersSelectionScreenState extends State<ServersSelectionScreen> {
             title: Text(conn['servername']?.toString().isNotEmpty == true
                 ? conn['servername']
                 : conn['host']),
-            subtitle:
-            Text('${conn['username']}@${conn['host']}:${conn['port']}'),
-            trailing: Row(
+            subtitle: Text(
+              '${(conn['protocol'] ?? '').toString().toUpperCase()} | ${conn['username']}@${conn['host']}:${conn['port']}'),
+          trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton(
@@ -127,6 +126,7 @@ class _AddEditConnectionDialogState extends State<AddEditConnectionDialog> {
   late TextEditingController _usernameController;
   late TextEditingController _passwordController;
   bool _isDefault = false;
+  String _protocol = 'sftp'; // default
 
   @override
   void initState() {
@@ -136,14 +136,15 @@ class _AddEditConnectionDialogState extends State<AddEditConnectionDialog> {
     _hostController =
         TextEditingController(text: widget.connection?['host'] ?? '');
     _portController = TextEditingController(
-        text: widget.connection?['port']?.toString() ?? '2025'); // default 2025
+        text: widget.connection?['port']?.toString() ?? '2025');
     _pathController = TextEditingController(
-        text: widget.connection?['path'] ?? '/serverProfile/farmersDB.json'); // default path
+        text: widget.connection?['path'] ?? '/serverProfile/farmersDB.json');
     _usernameController =
         TextEditingController(text: widget.connection?['username'] ?? '');
     _passwordController =
         TextEditingController(text: widget.connection?['password'] ?? '');
     _isDefault = (widget.connection?['isdefault'] ?? 0) == 1;
+    _protocol = widget.connection?['protocol'] ?? 'sftp';
   }
 
   @override
@@ -158,7 +159,6 @@ class _AddEditConnectionDialogState extends State<AddEditConnectionDialog> {
   }
 
   void _save() async {
-    // Validate all fields except isDefault
     if (_servernameController.text.trim().isEmpty ||
         _hostController.text.trim().isEmpty ||
         _portController.text.trim().isEmpty ||
@@ -171,7 +171,7 @@ class _AddEditConnectionDialogState extends State<AddEditConnectionDialog> {
           backgroundColor: Colors.redAccent,
         ),
       );
-      return; // don’t proceed if any field is empty
+      return;
     }
 
     final conn = {
@@ -183,6 +183,7 @@ class _AddEditConnectionDialogState extends State<AddEditConnectionDialog> {
       'username': _usernameController.text.trim(),
       'password': _passwordController.text.trim(),
       'isdefault': _isDefault ? 1 : 0,
+      'protocol': _protocol,
     };
 
     final db = SftpDatabase();
@@ -230,6 +231,15 @@ class _AddEditConnectionDialogState extends State<AddEditConnectionDialog> {
                 decoration: const InputDecoration(labelText: 'Password'),
                 obscureText: true,
               ),
+              DropdownButtonFormField<String>(
+                value: _protocol,
+                decoration: const InputDecoration(labelText: 'Protocol'),
+                items: const [
+                  DropdownMenuItem(value: 'sftp', child: Text('SFTP')),
+                  DropdownMenuItem(value: 'ftp', child: Text('FTP')),
+                ],
+                onChanged: (v) => setState(() => _protocol = v ?? 'sftp'),
+              ),
               CheckboxListTile(
                 title: const Text('Default'),
                 value: _isDefault,
@@ -252,4 +262,3 @@ class _AddEditConnectionDialogState extends State<AddEditConnectionDialog> {
     );
   }
 }
-

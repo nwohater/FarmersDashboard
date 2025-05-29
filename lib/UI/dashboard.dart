@@ -1,7 +1,7 @@
 import 'package:farmerdashboard/UI/server_selection.dart';
 import 'package:farmerdashboard/UI/servers.dart';
 import 'package:flutter/material.dart';
-import 'package:farmerdashboard/Utils/sftp_sync.dart';
+import 'package:farmerdashboard/Utils/sftp_sync2.dart';
 import 'package:farmerdashboard/Models/gamedata_model.dart';
 import 'package:farmerdashboard/UI/Widgets/weather_widget.dart';
 import 'package:farmerdashboard/UI/Widgets/date_widget.dart';
@@ -90,11 +90,9 @@ class _DashBoardState extends State<DashBoard> {
   Future<void> _loadData() async {
     if (_defaultConnection == null) return;
 
-    // Pass connection info to the SFTP download method
     final result = await downloadJsonFile(_defaultConnection!);
 
     if (!result.success) {
-      // Show a snackbar to inform the user
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -103,7 +101,7 @@ class _DashBoardState extends State<DashBoard> {
           ),
         );
       }
-      return; // exit if download failed
+      return;
     }
 
     final gameData = await loadGameData();
@@ -122,6 +120,7 @@ class _DashBoardState extends State<DashBoard> {
       }
     }
   }
+
 
   @override
   Widget build(BuildContext context) {

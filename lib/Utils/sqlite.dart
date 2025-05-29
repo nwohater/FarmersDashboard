@@ -22,7 +22,7 @@ class SftpDatabase {
 
     return await openDatabase(
       path,
-      version: 2, // bump version for onUpgrade
+      version: 3, // bumped for protocol column
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -38,7 +38,8 @@ class SftpDatabase {
         path TEXT NOT NULL,
         username TEXT NOT NULL,
         password TEXT NOT NULL,
-        isdefault INTEGER NOT NULL
+        isdefault INTEGER NOT NULL,
+        protocol TEXT NOT NULL DEFAULT 'sftp'
       )
     ''');
   }
@@ -47,12 +48,18 @@ class SftpDatabase {
     if (oldVersion < newVersion) {
       final columns =
       await db.rawQuery("PRAGMA table_info(sftp_connections);");
+
       final hasServername =
       columns.any((c) => c['name'] == 'servername');
-
       if (!hasServername) {
         await db.execute(
             "ALTER TABLE sftp_connections ADD COLUMN servername TEXT DEFAULT '';");
+      }
+
+      final hasProtocol = columns.any((c) => c['name'] == 'protocol');
+      if (!hasProtocol) {
+        await db.execute(
+            "ALTER TABLE sftp_connections ADD COLUMN protocol TEXT DEFAULT 'sftp';");
       }
     }
   }
@@ -97,6 +104,4 @@ class SftpDatabase {
       whereArgs: [id],
     );
   }
-
-
 }
