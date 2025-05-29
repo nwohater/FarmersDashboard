@@ -33,7 +33,7 @@ class _ServerPickerScreenState extends State<ServerPickerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Select a Server'),
+        title: const Text('Select Server', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
         backgroundColor: Colors.green,
       ),
       body: ListView.builder(

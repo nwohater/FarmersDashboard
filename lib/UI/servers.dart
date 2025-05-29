@@ -70,7 +70,7 @@ class _ServersSelectionScreenState extends State<ServersSelectionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('SFTP/FTP Connections')),
+      appBar: AppBar(title: const Text('Edit Servers', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 22),), backgroundColor: Colors.green,),
       body: ListView.builder(
         itemCount: _connections.length,
         itemBuilder: (context, index) {
