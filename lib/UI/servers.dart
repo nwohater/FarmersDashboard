@@ -76,11 +76,26 @@ class _ServersSelectionScreenState extends State<ServersSelectionScreen> {
         itemBuilder: (context, index) {
           final conn = _connections[index];
           return ListTile(
-            title: Text(conn['servername']?.toString().isNotEmpty == true
-                ? conn['servername']
-                : conn['host']),
+            title: Text(
+              conn['servername']?.toString().isNotEmpty == true
+                  ? conn['servername']
+                  : conn['host'],
+              style: const TextStyle(
+                fontFamily: 'Roboto',
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.teal,
+              ),
+            ),
             subtitle: Text(
-              '${(conn['protocol'] ?? '').toString().toUpperCase()} | ${conn['username']}@${conn['host']}:${conn['port']}'),
+              '${(conn['protocol'] ?? '').toString().toUpperCase()} | ${conn['host']}:${conn['port']}',
+              style: const TextStyle(
+                fontFamily: 'Roboto',
+                fontSize: 14,
+                fontWeight: FontWeight.normal,
+                color: Colors.black54,
+              ),
+            ),
           trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -197,68 +212,99 @@ class _AddEditConnectionDialogState extends State<AddEditConnectionDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text(
-          widget.connection == null ? 'Add Connection' : 'Edit Connection'),
-      content: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
+    final screenWidth = MediaQuery
+        .of(context)
+        .size
+        .width;
+    final dialogWidth = screenWidth * 0.9; // for example: 90% of screen width
+
+    return Dialog(
+      insetPadding: const EdgeInsets.all(16),
+      // optional: padding around the dialog
+      child: Container(
+        width: dialogWidth,
+        padding: const EdgeInsets.all(16),
+        child: SingleChildScrollView(
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              TextFormField(
-                controller: _servernameController,
-                decoration: const InputDecoration(labelText: 'Server Name'),
+              Text(
+                widget.connection == null
+                    ? 'Add Connection'
+                    : 'Edit Connection',
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.teal,
+                ),
               ),
-              TextFormField(
-                controller: _hostController,
-                decoration: const InputDecoration(labelText: 'Host'),
+              const SizedBox(height: 16),
+              Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    TextFormField(
+                      controller: _servernameController,
+                      decoration: const InputDecoration(
+                          labelText: 'Server Name'),
+                    ),
+                    TextFormField(
+                      controller: _hostController,
+                      decoration: const InputDecoration(labelText: 'Host'),
+                    ),
+                    TextFormField(
+                      controller: _portController,
+                      decoration: const InputDecoration(labelText: 'Port'),
+                      keyboardType: TextInputType.number,
+                    ),
+                    TextFormField(
+                      controller: _pathController,
+                      decoration: const InputDecoration(labelText: 'Path'),
+                    ),
+                    TextFormField(
+                      controller: _usernameController,
+                      decoration: const InputDecoration(labelText: 'Username'),
+                    ),
+                    TextFormField(
+                      controller: _passwordController,
+                      decoration: const InputDecoration(labelText: 'Password'),
+                      obscureText: true,
+                    ),
+                    DropdownButtonFormField<String>(
+                      value: _protocol,
+                      decoration: const InputDecoration(labelText: 'Protocol'),
+                      items: const [
+                        DropdownMenuItem(value: 'sftp', child: Text('SFTP')),
+                        DropdownMenuItem(value: 'ftp', child: Text('FTP')),
+                      ],
+                      onChanged: (v) => setState(() => _protocol = v ?? 'sftp'),
+                    ),
+                    CheckboxListTile(
+                      title: const Text('Default'),
+                      value: _isDefault,
+                      onChanged: (v) => setState(() => _isDefault = v ?? false),
+                    ),
+                  ],
+                ),
               ),
-              TextFormField(
-                controller: _portController,
-                decoration: const InputDecoration(labelText: 'Port'),
-                keyboardType: TextInputType.number,
-              ),
-              TextFormField(
-                controller: _pathController,
-                decoration: const InputDecoration(labelText: 'Path'),
-              ),
-              TextFormField(
-                controller: _usernameController,
-                decoration: const InputDecoration(labelText: 'Username'),
-              ),
-              TextFormField(
-                controller: _passwordController,
-                decoration: const InputDecoration(labelText: 'Password'),
-                obscureText: true,
-              ),
-              DropdownButtonFormField<String>(
-                value: _protocol,
-                decoration: const InputDecoration(labelText: 'Protocol'),
-                items: const [
-                  DropdownMenuItem(value: 'sftp', child: Text('SFTP')),
-                  DropdownMenuItem(value: 'ftp', child: Text('FTP')),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: const Text('Cancel'),
+                  ),
+                  const SizedBox(width: 8),
+                  ElevatedButton(
+                    onPressed: _save,
+                    child: const Text('Save'),
+                  ),
                 ],
-                onChanged: (v) => setState(() => _protocol = v ?? 'sftp'),
-              ),
-              CheckboxListTile(
-                title: const Text('Default'),
-                value: _isDefault,
-                onChanged: (v) => setState(() => _isDefault = v ?? false),
               ),
             ],
           ),
         ),
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
-        ),
-        ElevatedButton(
-          onPressed: _save,
-          child: const Text('Save'),
-        ),
-      ],
     );
-  }
-}
+  }}

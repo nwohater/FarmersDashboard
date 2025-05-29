@@ -41,12 +41,29 @@ class _ServerPickerScreenState extends State<ServerPickerScreen> {
         itemBuilder: (context, index) {
           final conn = _connections[index];
           return ListTile(
-            title: Text(conn['servername']?.toString().isNotEmpty == true
-                ? conn['servername']
-                : conn['host']),
-            subtitle: Text('${conn['username']}@${conn['host']}:${conn['port']}'),
+            title: Text(
+              conn['servername']?.toString().isNotEmpty == true
+                  ? conn['servername']
+                  : conn['host'],
+              style: const TextStyle(
+                fontFamily: 'Roboto',
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.teal,
+              ),
+            ),
+            subtitle: Text(
+              '${conn['host']}:${conn['port']}',
+              style: const TextStyle(
+                fontFamily: 'Roboto',
+                fontSize: 14,
+                fontWeight: FontWeight.normal,
+                color: Colors.black54,
+              ),
+            ),
             onTap: () => _selectConnection(conn),
           );
+
         },
       ),
     );
