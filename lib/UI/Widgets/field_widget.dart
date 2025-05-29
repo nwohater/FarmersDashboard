@@ -42,7 +42,8 @@ class FieldWidget extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("Growth: ${field.growthStateLabel} (${field.growthState})"),
+                Text("Growth: ${field.growthStateLabel}"),
+                //(${field.growthState})
                 Text("Area: $acres acres"),
               ],
             ),
