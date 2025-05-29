@@ -7,6 +7,7 @@ import 'package:farmerdashboard/UI/Widgets/weather_widget.dart';
 import 'package:farmerdashboard/UI/Widgets/date_widget.dart';
 import '../Utils/sqlite.dart';
 import 'Widgets/farm_widget.dart';
+import 'Widgets/field_widget.dart';
 import 'Widgets/forecast_widget.dart';
 import 'Widgets/offers_widget.dart';
 
@@ -302,14 +303,38 @@ class _DashBoardState extends State<DashBoard> {
                         const SizedBox(height: 5),
                         if (validFarms.isNotEmpty) ...[
                           ...validFarms.map((farm) {
+                            final fieldsForFarm = _gameData!.fields
+                                .where((field) => field.farmName.trim() == farm.name.trim())
+                                .toList();
+
                             return Padding(
                               padding: const EdgeInsets.symmetric(vertical: 8.0),
-                              child: FarmWidget(
-                                farmName: farm.name,
-                                money: farm.money,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // Farm header
+                                  FarmWidget(
+                                    farmName: farm.name,
+                                    money: farm.money,
+                                  ),
+                                  // Fields for this farm
+                                  if (fieldsForFarm.isNotEmpty) ...[
+                                    const SizedBox(height: 4),
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 0.0),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: fieldsForFarm.map((field) {
+                                          return Center(child: FieldWidget(field: field));
+                                        }).toList(),
+                                      ),
+                                    ),
+                                  ],
+                                ],
                               ),
                             );
                           }).toList(),
+
                         ] else ...[
                           const Padding(
                             padding: EdgeInsets.all(16.0),

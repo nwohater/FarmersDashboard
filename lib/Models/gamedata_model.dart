@@ -85,8 +85,8 @@ class Field {
   final int fieldId;
   final String fruitType;
   final int growthState;
-  final int weedState;
-  final String groundType;
+  final String growthStateLabel;
+  final double fieldAreaHa;
   final int farmId;
   final String farmName;
 
@@ -94,23 +94,22 @@ class Field {
     required this.fieldId,
     required this.fruitType,
     required this.growthState,
-    required this.weedState,
-    required this.groundType,
+    required this.growthStateLabel,
+    required this.fieldAreaHa,
     required this.farmId,
     required this.farmName,
   });
 
   factory Field.fromJson(Map<String, dynamic> json) => Field(
-    fieldId: json['fieldId'],
-    fruitType: json['fruitType'],
-    growthState: json['growthState'],
-    weedState: json['weedState'],
-    groundType: json['groundType'],
-    farmId: json['farmId'],
-    farmName: json['farmName'],
+    fieldId: json['fieldId'] ?? 0,
+    fruitType: json['fruitType'] ?? '',
+    growthState: json['growthState'] ?? 0,
+    growthStateLabel: json['growthStateLabel'] ?? '',
+    fieldAreaHa: (json['fieldAreaHa'] ?? 0).toDouble(),
+    farmId: json['farmId'] ?? 0,
+    farmName: json['farmName'] ?? '',
   );
 }
-
 class SpecialOffer {
   final String brand;
   final String name;
