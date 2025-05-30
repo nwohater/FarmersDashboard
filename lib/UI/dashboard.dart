@@ -222,10 +222,13 @@ class _DashBoardState extends State<DashBoard> {
                             const SizedBox(width: 8),
                             GestureDetector(
                               onTap: _pickServer,
-                              child: Image.asset(
-                                'assets/images/switch.png',
-                                width: 24,
-                                height: 24,
+                              child: Container(
+                                decoration: BoxDecoration(border: Border.all(color: Colors.grey, width: 1)),
+                                child: Image.asset(
+                                  'assets/images/switch2.png',
+                                  width: 28,
+                                  height: 28,
+                                ),
                               ),
                             ),
                           ],
@@ -286,7 +289,7 @@ class _DashBoardState extends State<DashBoard> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Image.asset(
-                              'assets/images/farmer1.png',
+                              'assets/images/barn1.png',
                               width: 40,
                               height: 40,
                             ),
