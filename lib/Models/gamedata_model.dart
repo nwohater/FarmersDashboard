@@ -64,21 +64,27 @@ class Farm {
   final int farmId;
   final String name;
   final double money;
+  final double? loan;
   final bool isPlayerFarm;
 
   Farm({
     required this.farmId,
     required this.name,
     required this.money,
+    this.loan,
     required this.isPlayerFarm,
   });
 
-  factory Farm.fromJson(Map<String, dynamic> json) => Farm(
-    farmId: json['farmId'],
-    name: json['name'],
-    money: json['money'].toDouble(),
-    isPlayerFarm: json['isPlayerFarm'],
-  );
+  factory Farm.fromJson(Map<String, dynamic> json) {
+    final loanValue = json['loan']; // <--- DEFINE loanValue HERE
+    return Farm(
+      farmId: json['farmId'] as int,
+      name: json['name'] as String,
+      money: (json['money'] as num).toDouble(),
+      loan: loanValue == null ? null : (loanValue as num).toDouble(), // Now loanValue is known
+      isPlayerFarm: json['isPlayerFarm'] as bool,
+    );
+  }
 }
 
 class Field {

@@ -319,6 +319,7 @@ class _DashBoardState extends State<DashBoard> {
                                   FarmWidget(
                                     farmName: farm.name,
                                     money: farm.money,
+                                    loanAmount: farm.loan,
                                   ),
                                   // Fields for this farm
                                   if (fieldsForFarm.isNotEmpty) ...[
