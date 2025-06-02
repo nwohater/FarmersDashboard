@@ -123,6 +123,7 @@ class SpecialOffer {
   final double originalPrice;
   final int percentOff;
   final int age;
+  final String? type; // ✅ Allow `type` to be nullable
 
   SpecialOffer({
     required this.brand,
@@ -131,17 +132,20 @@ class SpecialOffer {
     required this.originalPrice,
     required this.percentOff,
     required this.age,
+    this.type, // ✅ Allow it to be optional
   });
 
   factory SpecialOffer.fromJson(Map<String, dynamic> json) => SpecialOffer(
     brand: json['brand'],
     name: json['name'],
-    price: json['price'].toDouble(),
-    originalPrice: json['originalPrice'].toDouble(),
+    price: (json['price'] as num).toDouble(),
+    originalPrice: (json['originalPrice'] as num).toDouble(),
     percentOff: json['percentOff'],
     age: json['age'],
+    type: json['type'], // ✅ Parse directly (could be null)
   );
 }
+
 
 class Metadata {
   final String generatedBy;

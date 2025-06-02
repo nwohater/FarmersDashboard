@@ -3,13 +3,13 @@ import 'package:farmerdashboard/UI/servers.dart';
 import 'package:flutter/material.dart';
 import 'package:farmerdashboard/Utils/sftp_sync2.dart';
 import 'package:farmerdashboard/Models/gamedata_model.dart';
-import 'package:farmerdashboard/UI/Widgets/weather_widget.dart';
-import 'package:farmerdashboard/UI/Widgets/date_widget.dart';
+import 'package:farmerdashboard/UI/Widgets/weather_widget2.dart';
+import 'package:farmerdashboard/UI/Widgets/date_widget2.dart';
 import '../Utils/sqlite.dart';
-import 'Widgets/farm_widget.dart';
-import 'Widgets/field_widget.dart';
-import 'Widgets/forecast_widget.dart';
-import 'Widgets/offers_widget.dart';
+import 'Widgets/farm_widget2.dart';
+import 'Widgets/field_widget2.dart';
+import 'Widgets/forecast_widget2.dart';
+import 'Widgets/offers_widget2.dart';
 
 class DashBoard extends StatefulWidget {
   const DashBoard({super.key});
@@ -139,7 +139,7 @@ class _DashBoardState extends State<DashBoard> {
           fontSize: 24,
         ),
       ),
-      backgroundColor: Colors.green,
+      backgroundColor: Colors.green[400],
       actions: [
         IconButton(
           icon: const Icon(Icons.settings, color: Colors.white),
@@ -240,16 +240,25 @@ class _DashBoardState extends State<DashBoard> {
                       children: [
                         DateWidget(Date: date, Time: _gameData!.time),
                         const Divider(height: 20, thickness: 1),
-                        const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text(
-                            "Current Weather",
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.teal,
-                            ),
-                            textAlign: TextAlign.center,
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Image.asset(
+                                'assets/images/weather.png', // Make sure this is the correct path
+                                width: 40,
+                                height: 40,
+                              ),
+                              const Text(
+                                "Current Weather",
+                                style: TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.green,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                         WeatherWidget(
@@ -272,7 +281,7 @@ class _DashBoardState extends State<DashBoard> {
                                 style: TextStyle(
                                   fontSize: 22,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.teal,
+                                  color: Colors.green,
                                 ),
                               ),
                             ],
@@ -298,7 +307,7 @@ class _DashBoardState extends State<DashBoard> {
                               style: TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.teal,
+                                color: Colors.green,
                               ),
                             ),
                           ],
@@ -329,7 +338,7 @@ class _DashBoardState extends State<DashBoard> {
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: fieldsForFarm.map((field) {
-                                          return Center(child: FieldWidget(field: field));
+                                          return Center(child: FieldWidget(field: field, currentMonth: _gameData!.date.month -1));
                                         }).toList(),
                                       ),
                                     ),
@@ -360,7 +369,7 @@ class _DashBoardState extends State<DashBoard> {
                               style: TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.teal,
+                                color: Colors.green,
                               ),
                               textAlign: TextAlign.center,
                             ),
