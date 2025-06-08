@@ -63,7 +63,7 @@ class FarmWidget extends StatelessWidget {
                 Text(
                   farmName,
                   style: const TextStyle(
-                    fontSize: 18,
+                    fontSize: 16,
                     fontWeight: FontWeight.bold,
                     color: Colors.teal,
                   ),
@@ -77,7 +77,7 @@ class FarmWidget extends StatelessWidget {
                     Text(
                       _currencyFormatter.format(money),
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 14,
                         fontWeight: FontWeight.w600,
                         color: money < 0 ? Colors.red[700] : Colors.green[800],
                       ),

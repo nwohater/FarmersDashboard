@@ -32,7 +32,7 @@ class WeatherWidget extends StatelessWidget {
       height: 140, // Increased from 120
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFFB2EBF2), Color(0xFFE0F7FA)],
+          colors: [Colors.lightGreen, Colors.white],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -75,7 +75,7 @@ class WeatherWidget extends StatelessWidget {
             style: const TextStyle(
               fontSize: 14, // Increased from 12
               fontWeight: FontWeight.bold,
-              color: Colors.teal,
+              color: Colors.black,
             ),
             textAlign: TextAlign.center,
             overflow: TextOverflow.ellipsis,

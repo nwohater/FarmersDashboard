@@ -16,18 +16,18 @@ class SpecialOfferWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 4.0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
       margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 6.0),
       child: Container(
         decoration: BoxDecoration(
           gradient: const LinearGradient(
-            colors: [Color(0xFFE0F7FA), Color(0xFFF1F8E9)],
+            colors: [Colors.lightGreen, Colors.white],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
-          borderRadius: BorderRadius.circular(16.0),
+          borderRadius: BorderRadius.circular(12.0),
         ),
-        padding: const EdgeInsets.all(14.0),
+        padding: const EdgeInsets.all(12.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -37,20 +37,22 @@ class SpecialOfferWidget extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF4E342E), // Brown-ish for a farm feel
+                color: Colors.brown,
               ),
             ),
+            const Divider(height: 5, thickness: 1, color: Colors.grey),
+            const SizedBox(height: 4),
             // Brand row
             if (offer.brand.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 4.0, bottom: 6.0),
                 child: Row(
                   children: [
-                    const Icon(Icons.agriculture, color: Colors.orange, size: 20),
+                    const Icon(Icons.agriculture, color: Colors.black, size: 20),
                     const SizedBox(width: 4),
                     Text(
                       offer.brand,
-                      style: const TextStyle(fontSize: 16, color: Colors.orange, fontWeight: FontWeight.bold),
+                      style: const TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
@@ -108,18 +110,18 @@ class SpecialOfferWidget extends StatelessWidget {
                     if (offer.age > 0)
                       Row(
                         children: [
-                          const Icon(Icons.access_time, size: 16, color: Colors.grey),
+                          const Icon(Icons.access_time, size: 16, color: Colors.black),
                           const SizedBox(width: 4),
                           Text(
                             'Months: ${offer.age}',
-                            style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+                            style: TextStyle(fontSize: 14, color: Colors.black),
                           ),
                         ],
                       ),
                     if (offer.type != null && offer.type!.isNotEmpty)
                       Container(
                         decoration: BoxDecoration(
-                          color: Colors.teal[100],
+                          color: Colors.lightGreenAccent,
                           borderRadius: BorderRadius.circular(8.0),
                         ),
                         padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 2.0),
@@ -127,7 +129,7 @@ class SpecialOfferWidget extends StatelessWidget {
                           offer.type!,
                           style: const TextStyle(
                             fontSize: 12,
-                            color: Colors.teal,
+                            color: Colors.black,
                             fontWeight: FontWeight.w500,
                           ),
                         ),

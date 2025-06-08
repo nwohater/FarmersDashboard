@@ -3,13 +3,13 @@ import 'package:farmerdashboard/UI/servers.dart';
 import 'package:flutter/material.dart';
 import 'package:farmerdashboard/Utils/sftp_sync2.dart';
 import 'package:farmerdashboard/Models/gamedata_model.dart';
-import 'package:farmerdashboard/UI/Widgets/weather_widget2.dart';
-import 'package:farmerdashboard/UI/Widgets/date_widget2.dart';
 import '../Utils/sqlite.dart';
 import 'Widgets/farm_widget2.dart';
 import 'Widgets/field_widget2.dart';
 import 'Widgets/forecast_widget2.dart';
-import 'Widgets/offers_widget2.dart';
+import 'Widgets/offers_widget3.dart';
+import 'Widgets/dateweather_widget.dart'; // replace with your correct path
+
 
 class DashBoard extends StatefulWidget {
   const DashBoard({super.key});
@@ -211,13 +211,22 @@ class _DashBoardState extends State<DashBoard> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(
-                              '${_defaultConnection!['servername']}',
-                              style: const TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.teal,
-                              ),
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(Icons.dns, color: Colors.lightGreen, size: 28),
+                                const SizedBox(width: 8),
+                                Text(
+                                  '${_defaultConnection!['servername']}',
+                                  style: const TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.teal,
+                                    letterSpacing: 1.2,
+                                    shadows: [Shadow(blurRadius: 4, color: Colors.black26)],
+                                  ),
+                                ),
+                              ],
                             ),
                             const SizedBox(width: 8),
                             GestureDetector(
@@ -238,80 +247,18 @@ class _DashBoardState extends State<DashBoard> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        DateWidget(Date: date, Time: _gameData!.time),
-                        const Divider(height: 20, thickness: 1),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Image.asset(
-                                'assets/images/weather.png', // Make sure this is the correct path
-                                width: 40,
-                                height: 40,
-                              ),
-                              const Text(
-                                "Current Weather",
-                                style: TextStyle(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.green,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        WeatherWidget(
+                        DateWeatherWidget(
+                          date: date,
+                          time: _gameData!.time,
                           condition: condition,
                           temperature: temperatureF,
                         ),
-                        const Divider(height: 20, thickness: 1),
                         if (_gameData!.weather.forecast.isNotEmpty) ...[
-                          const SizedBox(height: 20),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Image.asset(
-                                'assets/images/forecast.png',
-                                width: 40,
-                                height: 40,
-                              ),
-                              const Text(
-                                "Weather Forecast",
-                                style: TextStyle(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.green,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 10),
                           ForecastWidget(
                             currentWeatherData: _gameData!.weather,
                             forecastDynamicItems: _gameData!.weather.forecast,
                           ),
-                          const Divider(height: 30, thickness: 1, indent: 20, endIndent: 20),
                         ],
-                        const SizedBox(height: 5),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Image.asset(
-                              'assets/images/barn1.png',
-                              width: 40,
-                              height: 40,
-                            ),
-                            const Text(
-                              "The Farm Report",
-                              style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.green,
-                              ),
-                            ),
-                          ],
-                        ),
                         const SizedBox(height: 5),
                         if (validFarms.isNotEmpty) ...[
                           ...validFarms.map((farm) {
@@ -320,7 +267,7 @@ class _DashBoardState extends State<DashBoard> {
                                 .toList();
 
                             return Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 8.0),
+                              padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -355,27 +302,6 @@ class _DashBoardState extends State<DashBoard> {
                           ),
                         ],
                         const SizedBox(height: 5),
-                        const Divider(height: 20, thickness: 1),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Image.asset(
-                              'assets/images/Forsale.png',
-                              width: 50,
-                              height: 50,
-                            ),
-                            const Text(
-                              'Special Deals',
-                              style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.green,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
                         if (specialOffers.isNotEmpty) ...[
                           ...specialOffers.map((offer) {
                             return SpecialOfferWidget(offer: offer);

@@ -38,13 +38,13 @@ class ForecastWidget extends StatelessWidget {
 
     // 🔥 Use the same gradient for ALL forecasts
     final Gradient gradient = const LinearGradient(
-      colors: [Color(0xFFB2EBF2), Color(0xFFE0F7FA)],
+      colors: [Colors.lightGreen, Colors.white],
       begin: Alignment.topLeft,
       end: Alignment.bottomRight,
     );
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 4.0),
+      margin: const EdgeInsets.symmetric(horizontal: 7.0, vertical: 4.0),
       width: 80,
       height: 120,
       decoration: BoxDecoration(
@@ -70,7 +70,7 @@ class ForecastWidget extends StatelessWidget {
             style: const TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.bold,
-              color: Color(0xFF004D40), // Deep teal
+              color: Colors.black, // Deep teal
             ),
             textAlign: TextAlign.center,
           ),
@@ -104,7 +104,7 @@ class ForecastWidget extends StatelessWidget {
             displayCondition,
             style: const TextStyle(
               fontSize: 10,
-              color: Colors.teal,
+              color: Colors.black,
               fontWeight: FontWeight.bold,
             ),
             textAlign: TextAlign.center,
