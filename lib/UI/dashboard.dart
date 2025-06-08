@@ -207,7 +207,7 @@ class _DashBoardState extends State<DashBoard> {
                             .isNotEmpty ??
                             false))
                       Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        padding: const EdgeInsets.symmetric(vertical: 4.0),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -259,13 +259,11 @@ class _DashBoardState extends State<DashBoard> {
                             forecastDynamicItems: _gameData!.weather.forecast,
                           ),
                         ],
-                        const SizedBox(height: 5),
                         if (validFarms.isNotEmpty) ...[
                           ...validFarms.map((farm) {
                             final fieldsForFarm = _gameData!.fields
                                 .where((field) => field.farmName.trim() == farm.name.trim())
                                 .toList();
-
                             return Padding(
                               padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
                               child: Column(
