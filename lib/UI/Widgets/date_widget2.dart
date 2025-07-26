@@ -5,11 +5,7 @@ class DateWidget extends StatelessWidget {
   final String Date;
   final String Time;
 
-  const DateWidget({
-    super.key,
-    required this.Date,
-    required this.Time,
-  });
+  const DateWidget({super.key, required this.Date, required this.Time});
 
   String _formatTime(String time24h) {
     try {
@@ -24,7 +20,26 @@ class DateWidget extends StatelessWidget {
     final parts = dateStr.split(' ');
     if (parts.length < 2) return dateStr;
 
+    final month = parts[0];
     final day = int.tryParse(parts[1]) ?? 0;
+
+    // Abbreviate month names
+    final Map<String, String> monthAbbreviations = {
+      'January': 'Jan',
+      'February': 'Feb',
+      'March': 'Mar',
+      'April': 'Apr',
+      'May': 'May',
+      'June': 'Jun',
+      'July': 'Jul',
+      'August': 'Aug',
+      'September': 'Sep',
+      'October': 'Oct',
+      'November': 'Nov',
+      'December': 'Dec',
+    };
+
+    final abbreviatedMonth = monthAbbreviations[month] ?? month;
 
     String suffix = 'th';
     if (day % 10 == 1 && day != 11) {
@@ -35,16 +50,21 @@ class DateWidget extends StatelessWidget {
       suffix = 'rd';
     }
 
-    return '${parts[0]} $day$suffix';
+    return '$abbreviatedMonth $day$suffix';
   }
 
   @override
   Widget build(BuildContext context) {
     final String formattedTime = _formatTime(Time);
     final String dateWithSuffix = _addOrdinalSuffix(Date);
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 400;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+      padding: EdgeInsets.symmetric(
+        horizontal: isSmallScreen ? 12.0 : 16.0,
+        vertical: isSmallScreen ? 8.0 : 10.0,
+      ),
       decoration: BoxDecoration(
         color: Colors.green.shade600,
         borderRadius: BorderRadius.circular(16.0),
@@ -56,32 +76,88 @@ class DateWidget extends StatelessWidget {
           ),
         ],
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.calendar_today, color: Colors.white, size: 20),
-          const SizedBox(width: 8),
-          Text(
-            dateWithSuffix,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(width: 16),
-          const Icon(Icons.access_time, color: Colors.white, size: 20),
-          const SizedBox(width: 8),
-          Text(
-            formattedTime,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: Colors.white,
-            ),
-          ),
-        ],
-      ),
+      child:
+          isSmallScreen
+              ? Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.calendar_today,
+                        color: Colors.white,
+                        size: isSmallScreen ? 16 : 20,
+                      ),
+                      const SizedBox(width: 6),
+                      Flexible(
+                        child: Text(
+                          dateWithSuffix,
+                          style: TextStyle(
+                            fontSize: isSmallScreen ? 14 : 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.access_time,
+                        color: Colors.white,
+                        size: isSmallScreen ? 16 : 20,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        formattedTime,
+                        style: TextStyle(
+                          fontSize: isSmallScreen ? 14 : 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              )
+              : Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.calendar_today,
+                    color: Colors.white,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 8),
+                  Flexible(
+                    child: Text(
+                      dateWithSuffix,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  const Icon(Icons.access_time, color: Colors.white, size: 20),
+                  const SizedBox(width: 8),
+                  Text(
+                    formattedTime,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
     );
   }
 }

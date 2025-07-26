@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import '/Utils/sqlite.dart';
-import '/UI/Widgets/server_select_dialog.dart';
+import 'dashboard.dart';
 
 class ServersSelectionScreen extends StatefulWidget {
   const ServersSelectionScreen({Key? key}) : super(key: key);
 
   @override
-  _ServersSelectionScreenState createState() =>
-      _ServersSelectionScreenState();
+  _ServersSelectionScreenState createState() => _ServersSelectionScreenState();
 }
 
 class _ServersSelectionScreenState extends State<ServersSelectionScreen> {
@@ -43,21 +42,24 @@ class _ServersSelectionScreenState extends State<ServersSelectionScreen> {
   Future<void> _deleteConnection(int id) async {
     final confirm = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete Connection'),
-        content: const Text('Are you sure you want to delete this connection?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Delete Connection'),
+            content: const Text(
+              'Are you sure you want to delete this connection?',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                child: const Text('Delete'),
+              ),
+            ],
           ),
-          ElevatedButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('Delete'),
-          ),
-        ],
-      ),
     );
 
     if (confirm == true) {
@@ -70,50 +72,110 @@ class _ServersSelectionScreenState extends State<ServersSelectionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Edit Servers', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 22),), backgroundColor: Colors.green,),
-      body: ListView.builder(
-        itemCount: _connections.length,
-        itemBuilder: (context, index) {
-          final conn = _connections[index];
-          return ListTile(
-            title: Text(
-              conn['servername']?.toString().isNotEmpty == true
-                  ? conn['servername']
-                  : conn['host'],
-              style: const TextStyle(
-                fontFamily: 'Roboto',
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.teal,
-              ),
-            ),
-            subtitle: Text(
-              '${(conn['protocol'] ?? '').toString().toUpperCase()} | ${conn['host']}:${conn['port']}',
-              style: const TextStyle(
-                fontFamily: 'Roboto',
-                fontSize: 14,
-                fontWeight: FontWeight.normal,
-                color: Colors.black54,
-              ),
-            ),
-          trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.edit, color: Colors.teal),
-                  onPressed: () {
-                    _showAddEditDialog(existing: conn);
-                  },
-                ),
-                IconButton(
-                  icon: const Icon(Icons.delete, color: Colors.red),
-                  onPressed: () => _deleteConnection(conn['id']),
-                ),
-              ],
-            ),
-          );
-        },
+      appBar: AppBar(
+        title: const Text(
+          'Edit Servers',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 22,
+          ),
+        ),
+        backgroundColor: Colors.green,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () async {
+            // Check if there are servers to determine where to go
+            final db = SftpDatabase();
+            final connections = await db.getConnections();
+
+            if (connections.isNotEmpty) {
+              // If servers exist, go to dashboard
+              if (mounted) {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (_) => const DashBoard()),
+                );
+              }
+            } else {
+              // If no servers, just go back (to help screen)
+              Navigator.of(context).pop();
+            }
+          },
+        ),
       ),
+      body:
+          _connections.isEmpty
+              ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.add_circle_outline,
+                      size: 64,
+                      color: Colors.grey[400],
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'No servers found',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Click the + button to add your first server',
+                      style: TextStyle(fontSize: 16, color: Colors.grey[500]),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              )
+              : ListView.builder(
+                itemCount: _connections.length,
+                itemBuilder: (context, index) {
+                  final conn = _connections[index];
+                  return ListTile(
+                    title: Text(
+                      conn['servername']?.toString().isNotEmpty == true
+                          ? conn['servername']
+                          : conn['host'],
+                      style: const TextStyle(
+                        fontFamily: 'Roboto',
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.teal,
+                      ),
+                    ),
+                    subtitle: Text(
+                      '${(conn['protocol'] ?? '').toString().toUpperCase()} | ${conn['host']}:${conn['port']}',
+                      style: const TextStyle(
+                        fontFamily: 'Roboto',
+                        fontSize: 14,
+                        fontWeight: FontWeight.normal,
+                        color: Colors.black54,
+                      ),
+                    ),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.edit, color: Colors.teal),
+                          onPressed: () {
+                            _showAddEditDialog(existing: conn);
+                          },
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.delete, color: Colors.red),
+                          onPressed: () => _deleteConnection(conn['id']),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showAddEditDialog(),
         child: const Icon(Icons.add),
@@ -146,18 +208,24 @@ class _AddEditConnectionDialogState extends State<AddEditConnectionDialog> {
   @override
   void initState() {
     super.initState();
-    _servernameController =
-        TextEditingController(text: widget.connection?['servername'] ?? '');
-    _hostController =
-        TextEditingController(text: widget.connection?['host'] ?? '');
+    _servernameController = TextEditingController(
+      text: widget.connection?['servername'] ?? '',
+    );
+    _hostController = TextEditingController(
+      text: widget.connection?['host'] ?? '',
+    );
     _portController = TextEditingController(
-        text: widget.connection?['port']?.toString() ?? '2025');
+      text: widget.connection?['port']?.toString() ?? '2025',
+    );
     _pathController = TextEditingController(
-        text: widget.connection?['path'] ?? '/serverProfile/farmersDB.json');
-    _usernameController =
-        TextEditingController(text: widget.connection?['username'] ?? '');
-    _passwordController =
-        TextEditingController(text: widget.connection?['password'] ?? '');
+      text: widget.connection?['path'] ?? '/serverProfile/farmersDB.json',
+    );
+    _usernameController = TextEditingController(
+      text: widget.connection?['username'] ?? '',
+    );
+    _passwordController = TextEditingController(
+      text: widget.connection?['password'] ?? '',
+    );
     _isDefault = (widget.connection?['isdefault'] ?? 0) == 1;
     _protocol = widget.connection?['protocol'] ?? 'sftp';
   }
@@ -189,6 +257,90 @@ class _AddEditConnectionDialogState extends State<AddEditConnectionDialog> {
       return;
     }
 
+    // Check if host contains protocol prefix
+    final hostText = _hostController.text.trim();
+    if (hostText.startsWith('sftp://') || hostText.startsWith('ftp://')) {
+      final cleanHost = hostText.replaceAll(RegExp(r'^(sftp|ftp)://'), '');
+      final shouldContinue = await showDialog<bool>(
+        context: context,
+        builder:
+            (context) => AlertDialog(
+              title: const Text('Protocol Detected'),
+              content: Text(
+                'The host field contains a protocol prefix (${hostText.startsWith('sftp://') ? 'sftp://' : 'ftp://'}). '
+                'This should be removed as the protocol is selected separately.\n\n'
+                'Would you like to automatically remove it and continue?',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: const Text('Remove & Continue'),
+                ),
+              ],
+            ),
+      );
+
+      if (shouldContinue == true) {
+        setState(() {
+          _hostController.text = cleanHost;
+        });
+      } else {
+        return;
+      }
+    }
+
+    // Check if path ends with farmersDB.json
+    final pathText = _pathController.text.trim();
+    if (!pathText.endsWith('farmersDB.json')) {
+      final shouldContinue = await showDialog<bool>(
+        context: context,
+        builder:
+            (context) => AlertDialog(
+              title: const Text('Path Validation'),
+              content: Text(
+                'The path should end with "farmersDB.json".\n\n'
+                'Current path: $pathText\n\n'
+                'Would you like to automatically append "farmersDB.json" to the path?',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: const Text('Append & Continue'),
+                ),
+              ],
+            ),
+      );
+
+      if (shouldContinue == true) {
+        // Clean up the path to ensure proper formatting
+        String cleanPath = pathText;
+
+        // Remove trailing slash if present
+        if (cleanPath.endsWith('/')) {
+          cleanPath = cleanPath.substring(0, cleanPath.length - 1);
+        }
+
+        // Ensure path starts with /
+        if (!cleanPath.startsWith('/')) {
+          cleanPath = '/$cleanPath';
+        }
+
+        setState(() {
+          _pathController.text = '$cleanPath/farmersDB.json';
+        });
+      } else {
+        return;
+      }
+    }
+
     final conn = {
       'id': widget.connection?['id'],
       'servername': _servernameController.text.trim(),
@@ -212,10 +364,7 @@ class _AddEditConnectionDialogState extends State<AddEditConnectionDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery
-        .of(context)
-        .size
-        .width;
+    final screenWidth = MediaQuery.of(context).size.width;
     final dialogWidth = screenWidth * 0.9; // for example: 90% of screen width
 
     return Dialog(
@@ -246,7 +395,17 @@ class _AddEditConnectionDialogState extends State<AddEditConnectionDialog> {
                     TextFormField(
                       controller: _servernameController,
                       decoration: const InputDecoration(
-                          labelText: 'Server Name'),
+                        labelText: 'Server Name',
+                        helperText: 'Max 20 characters',
+                      ),
+                      maxLength: 20,
+                      buildCounter:
+                          (
+                            context, {
+                            required currentLength,
+                            required isFocused,
+                            maxLength,
+                          }) => null,
                     ),
                     TextFormField(
                       controller: _hostController,
@@ -259,7 +418,9 @@ class _AddEditConnectionDialogState extends State<AddEditConnectionDialog> {
                     ),
                     TextFormField(
                       controller: _pathController,
-                      decoration: const InputDecoration(labelText: 'Path'),
+                      decoration: const InputDecoration(
+                        labelText: 'Path To farmersDB.json',
+                      ),
                     ),
                     TextFormField(
                       controller: _usernameController,
@@ -296,10 +457,7 @@ class _AddEditConnectionDialogState extends State<AddEditConnectionDialog> {
                     child: const Text('Cancel'),
                   ),
                   const SizedBox(width: 8),
-                  ElevatedButton(
-                    onPressed: _save,
-                    child: const Text('Save'),
-                  ),
+                  ElevatedButton(onPressed: _save, child: const Text('Save')),
                 ],
               ),
             ],
@@ -307,4 +465,5 @@ class _AddEditConnectionDialogState extends State<AddEditConnectionDialog> {
         ),
       ),
     );
-  }}
+  }
+}

@@ -28,7 +28,26 @@ class DateWeatherWidget extends StatelessWidget {
     final parts = dateStr.split(' ');
     if (parts.length < 2) return dateStr;
 
+    final month = parts[0];
     final day = int.tryParse(parts[1]) ?? 0;
+
+    // Abbreviate month names
+    final Map<String, String> monthAbbreviations = {
+      'January': 'Jan',
+      'February': 'Feb',
+      'March': 'Mar',
+      'April': 'Apr',
+      'May': 'May',
+      'June': 'Jun',
+      'July': 'Jul',
+      'August': 'Aug',
+      'September': 'Sep',
+      'October': 'Oct',
+      'November': 'Nov',
+      'December': 'Dec',
+    };
+
+    final abbreviatedMonth = monthAbbreviations[month] ?? month;
 
     String suffix = 'th';
     if (day % 10 == 1 && day != 11) {
@@ -39,7 +58,7 @@ class DateWeatherWidget extends StatelessWidget {
       suffix = 'rd';
     }
 
-    return '${parts[0]} $day$suffix';
+    return '$abbreviatedMonth $day$suffix';
   }
 
   @override
@@ -59,11 +78,7 @@ class DateWeatherWidget extends StatelessWidget {
           end: Alignment.bottomRight,
         ),
         boxShadow: const [
-          BoxShadow(
-            color: Colors.black26,
-            blurRadius: 6,
-            offset: Offset(2, 4),
-          ),
+          BoxShadow(color: Colors.black26, blurRadius: 6, offset: Offset(2, 4)),
         ],
       ),
       child: Wrap(
@@ -84,10 +99,7 @@ class DateWeatherWidget extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(
-          emoji,
-          style: const TextStyle(fontSize: 18),
-        ),
+        Text(emoji, style: const TextStyle(fontSize: 18)),
         const SizedBox(width: 6),
         Text(
           text,
@@ -101,7 +113,3 @@ class DateWeatherWidget extends StatelessWidget {
     );
   }
 }
-
-
-
-

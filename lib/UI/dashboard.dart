@@ -1,5 +1,6 @@
 import 'package:farmerdashboard/UI/server_selection.dart';
 import 'package:farmerdashboard/UI/servers.dart';
+import 'package:farmerdashboard/UI/help_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:farmerdashboard/Utils/sftp_sync2.dart';
 import 'package:farmerdashboard/Models/gamedata_model.dart';
@@ -9,7 +10,6 @@ import 'Widgets/field_widget2.dart';
 import 'Widgets/forecast_widget2.dart';
 import 'Widgets/offers_widget3.dart';
 import 'Widgets/dateweather_widget.dart'; // replace with your correct path
-
 
 class DashBoard extends StatefulWidget {
   const DashBoard({super.key});
@@ -76,15 +76,17 @@ class _DashBoardState extends State<DashBoard> {
 
     // Try to find default connection
     final defaultConn = connections.firstWhere(
-          (conn) => conn['isdefault'] == 1,
+      (conn) => conn['isdefault'] == 1,
       orElse: () => {},
     );
 
     if (defaultConn.isNotEmpty) {
       _defaultConnection = defaultConn;
     } else {
-      // No default, but at least one connection – pick first
+      // No default, but at least one connection – set first as default
       _defaultConnection = connections.first;
+      // Set the first connection as default in the database
+      await db.setAsDefault(_defaultConnection!['id']);
     }
   }
 
@@ -122,13 +124,20 @@ class _DashBoardState extends State<DashBoard> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     final appBar = AppBar(
-      leading: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Image.asset('assets/images/tractor1.png'),
+      leading: GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const HelpScreen()),
+          );
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Image.asset('assets/images/tractor1.png'),
+        ),
       ),
       centerTitle: true,
       title: const Text(
@@ -148,9 +157,7 @@ class _DashBoardState extends State<DashBoard> {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(
-                builder: (_) => const ServersSelectionScreen(),
-              ),
+              MaterialPageRoute(builder: (_) => const ServersSelectionScreen()),
             );
           },
         ),
@@ -167,18 +174,75 @@ class _DashBoardState extends State<DashBoard> {
     if (_gameData == null) {
       return Scaffold(
         appBar: appBar,
-        body: const Center(child: Text('No data to display.')),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error_outline, size: 64, color: Colors.grey),
+              const SizedBox(height: 16),
+              const Text(
+                'No data to display',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey,
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Unable to load data from the server',
+                style: TextStyle(fontSize: 16, color: Colors.grey),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton.icon(
+                    onPressed: () async {
+                      setState(() {
+                        _loading = true;
+                      });
+                      await _loadData();
+                      setState(() {
+                        _loading = false;
+                      });
+                    },
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Retry'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                      foregroundColor: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  ElevatedButton.icon(
+                    onPressed: _pickServer,
+                    icon: const Icon(Icons.swap_horiz),
+                    label: const Text('Change Server'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.teal,
+                      foregroundColor: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
       );
     }
 
     final String condition = _gameData!.weather.condition;
     final double temperatureF = _gameData!.weather.temperatureF;
-    final String date = _gameData!.date.monthName.isNotEmpty
-        ? '${_gameData!.date.monthName} ${_gameData!.date.day}'
-        : 'Date N/A';
-    final List<Farm> validFarms = _gameData!.farms.where((farm) {
-      return farm.name.trim().isNotEmpty;
-    }).toList();
+    final String date =
+        _gameData!.date.monthName.isNotEmpty
+            ? '${_gameData!.date.monthName} ${_gameData!.date.day}'
+            : 'Date N/A';
+    final List<Farm> validFarms =
+        _gameData!.farms.where((farm) {
+          return farm.name.trim().isNotEmpty;
+        }).toList();
     final List<SpecialOffer> specialOffers = _gameData!.specialOffers;
 
     return Scaffold(
@@ -203,8 +267,8 @@ class _DashBoardState extends State<DashBoard> {
                   children: [
                     if (_defaultConnection != null &&
                         (_defaultConnection!['servername']
-                            ?.toString()
-                            .isNotEmpty ??
+                                ?.toString()
+                                .isNotEmpty ??
                             false))
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 4.0),
@@ -214,7 +278,11 @@ class _DashBoardState extends State<DashBoard> {
                             Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                const Icon(Icons.dns, color: Colors.lightGreen, size: 28),
+                                const Icon(
+                                  Icons.dns,
+                                  color: Colors.lightGreen,
+                                  size: 28,
+                                ),
                                 const SizedBox(width: 8),
                                 Text(
                                   '${_defaultConnection!['servername']}',
@@ -223,7 +291,12 @@ class _DashBoardState extends State<DashBoard> {
                                     fontWeight: FontWeight.bold,
                                     color: Colors.teal,
                                     letterSpacing: 1.2,
-                                    shadows: [Shadow(blurRadius: 4, color: Colors.black26)],
+                                    shadows: [
+                                      Shadow(
+                                        blurRadius: 4,
+                                        color: Colors.black26,
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ],
@@ -232,7 +305,12 @@ class _DashBoardState extends State<DashBoard> {
                             GestureDetector(
                               onTap: _pickServer,
                               child: Container(
-                                decoration: BoxDecoration(border: Border.all(color: Colors.grey, width: 1)),
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: Colors.grey,
+                                    width: 1,
+                                  ),
+                                ),
                                 child: Image.asset(
                                   'assets/images/switch2.png',
                                   width: 28,
@@ -261,11 +339,19 @@ class _DashBoardState extends State<DashBoard> {
                         ],
                         if (validFarms.isNotEmpty) ...[
                           ...validFarms.map((farm) {
-                            final fieldsForFarm = _gameData!.fields
-                                .where((field) => field.farmName.trim() == farm.name.trim())
-                                .toList();
+                            final fieldsForFarm =
+                                _gameData!.fields
+                                    .where(
+                                      (field) =>
+                                          field.farmName.trim() ==
+                                          farm.name.trim(),
+                                    )
+                                    .toList();
                             return Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 8.0,
+                                horizontal: 12.0,
+                              ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -281,10 +367,18 @@ class _DashBoardState extends State<DashBoard> {
                                     Padding(
                                       padding: const EdgeInsets.only(left: 0.0),
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: fieldsForFarm.map((field) {
-                                          return Center(child: FieldWidget(field: field, currentMonth: _gameData!.date.month -1));
-                                        }).toList(),
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children:
+                                            fieldsForFarm.map((field) {
+                                              return Center(
+                                                child: FieldWidget(
+                                                  field: field,
+                                                  currentMonth:
+                                                      _gameData!.date.month - 1,
+                                                ),
+                                              );
+                                            }).toList(),
                                       ),
                                     ),
                                   ],
@@ -292,7 +386,6 @@ class _DashBoardState extends State<DashBoard> {
                               ),
                             );
                           }).toList(),
-
                         ] else ...[
                           const Padding(
                             padding: EdgeInsets.all(16.0),
@@ -310,7 +403,10 @@ class _DashBoardState extends State<DashBoard> {
                             child: Center(
                               child: Text(
                                 'No deals available at the moment.',
-                                style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey[600],
+                                ),
                               ),
                             ),
                           ),
