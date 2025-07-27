@@ -132,7 +132,7 @@ class HelpScreen extends StatelessWidget {
                         ),
                         const SizedBox(width: 8),
                         const Text(
-                          'What You\'ll See on the Dashboard',
+                          'What\'s on the Dashboard',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
