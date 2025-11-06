@@ -12,27 +12,40 @@ class AppInitializer extends StatefulWidget {
 }
 
 class _AppInitializerState extends State<AppInitializer> {
-  bool _isLoading = true;
+  bool _isInitialized = false;
   bool _hasServers = false;
 
   @override
   void initState() {
     super.initState();
-    _checkInitialState();
+    // Wait for first frame to be rendered before checking state
+    // This prevents double splash screen
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkInitialState();
+    });
   }
 
   Future<void> _checkInitialState() async {
     final db = SftpDatabase();
     final connections = await db.getConnections();
 
-    setState(() {
-      _hasServers = connections.isNotEmpty;
-      _isLoading = false;
-    });
+    _hasServers = connections.isNotEmpty;
 
-    // If no servers exist, show help screen first
     if (!_hasServers && mounted) {
+      // No servers - show help screen first
       await _showHelpFirst();
+    } else if (mounted) {
+      // Has servers - navigate to dashboard
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const DashBoard()),
+      );
+    }
+
+    if (mounted) {
+      setState(() {
+        _isInitialized = true;
+      });
     }
   }
 
@@ -68,45 +81,11 @@ class _AppInitializerState extends State<AppInitializer> {
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return Scaffold(
-        backgroundColor: const Color(0xFF0f0f1e),
-        body: const Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.teal),
-              ),
-              SizedBox(height: 16),
-              Text(
-                'Loading...',
-                style: TextStyle(
-                  color: Colors.white70,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
-    // If servers exist, go directly to dashboard
-    if (_hasServers) {
-      return const DashBoard();
-    }
-
-    // If no servers, the help screen will be pushed in _showHelpFirst
-    // Show a loading screen while waiting
-    return Scaffold(
-      backgroundColor: const Color(0xFF0f0f1e),
-      body: const Center(
-        child: CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(Colors.teal),
-        ),
-      ),
+    // Show a black screen matching the splash screen
+    // Navigation happens in initState after first frame
+    return const Scaffold(
+      backgroundColor: Color(0xFF000000),
+      body: SizedBox.shrink(),
     );
   }
 }
