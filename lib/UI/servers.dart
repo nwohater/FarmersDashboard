@@ -81,8 +81,27 @@ class _ServersSelectionScreenState extends State<ServersSelectionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
+    return PopScope(
+      canPop: _connections.isNotEmpty,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (!didPop && _connections.isEmpty) {
+          // Prevent popping when no servers exist
+          // User must add a server to continue
+          return;
+        }
+
+        if (didPop && _connections.isNotEmpty) {
+          // Navigate to dashboard when servers exist
+          if (mounted) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => const DashBoard()),
+            );
+          }
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
         title: const Text(
           'Manage Servers',
           style: TextStyle(
@@ -93,27 +112,27 @@ class _ServersSelectionScreenState extends State<ServersSelectionScreen> {
         ),
         backgroundColor: const Color(0xFF1a1a2e),
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () async {
-            // Check if there are servers to determine where to go
-            final db = SftpDatabase();
-            final connections = await db.getConnections();
+        leading: _connections.isEmpty
+            ? null // Hide back button when no servers exist
+            : IconButton(
+                icon: const Icon(Icons.arrow_back, color: Colors.white),
+                onPressed: () async {
+                  // Check if there are servers to determine where to go
+                  final db = SftpDatabase();
+                  final connections = await db.getConnections();
 
-            if (connections.isNotEmpty) {
-              // If servers exist, go to dashboard
-              if (mounted) {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (_) => const DashBoard()),
-                );
-              }
-            } else {
-              // If no servers, just go back (to help screen)
-              Navigator.of(context).pop();
-            }
-          },
-        ),
+                  if (connections.isNotEmpty) {
+                    // If servers exist, go to dashboard
+                    if (mounted) {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (_) => const DashBoard()),
+                      );
+                    }
+                  }
+                },
+              ),
+        automaticallyImplyLeading: _connections.isNotEmpty,
       ),
       backgroundColor: const Color(0xFF0f0f1e),
       body: _connections.isEmpty
@@ -299,6 +318,7 @@ class _ServersSelectionScreenState extends State<ServersSelectionScreen> {
         onPressed: () => _showAddEditDialog(),
         backgroundColor: Colors.teal.shade700,
         child: const Icon(Icons.add, color: Colors.white),
+      ),
       ),
     );
   }

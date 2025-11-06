@@ -70,32 +70,24 @@ class _AppInitializerState extends State<AppInitializer> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Scaffold(
-        body: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.green, Colors.lightGreen],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-          child: const Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+        backgroundColor: const Color(0xFF0f0f1e),
+        body: const Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.teal),
+              ),
+              SizedBox(height: 16),
+              Text(
+                'Loading...',
+                style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
                 ),
-                SizedBox(height: 16),
-                Text(
-                  'Loading...',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       );
@@ -106,7 +98,15 @@ class _AppInitializerState extends State<AppInitializer> {
       return const DashBoard();
     }
 
-    // If no servers, show help screen
-    return const HelpScreen();
+    // If no servers, the help screen will be pushed in _showHelpFirst
+    // Show a loading screen while waiting
+    return Scaffold(
+      backgroundColor: const Color(0xFF0f0f1e),
+      body: const Center(
+        child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(Colors.teal),
+        ),
+      ),
+    );
   }
 }

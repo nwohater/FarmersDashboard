@@ -10,11 +10,11 @@
 		</data>
 		<key>flutter_assets/AssetManifest.bin</key>
 		<data>
-		doZ0J6hFhpN6fPeSTwONoZjT36w=
+		UkG/p/p6teNsB3XWFdWevwB2NoA=
 		</data>
 		<key>flutter_assets/AssetManifest.json</key>
 		<data>
-		p3mwvxDnSEIB+XmZKoZg0z2hQq4=
+		fH9o2wRjPQ2ey+UmMU/6eY1uhm0=
 		</data>
 		<key>flutter_assets/FontManifest.json</key>
 		<data>
@@ -22,7 +22,7 @@
 		</data>
 		<key>flutter_assets/NOTICES.Z</key>
 		<data>
-		An435Ole3Th2ieOQOdgNFRZ5VZo=
+		Fi8Nr65fOJPPuNW//QNZZKn8wjc=
 		</data>
 		<key>flutter_assets/NativeAssetsManifest.json</key>
 		<data>
@@ -51,6 +51,10 @@
 		<key>flutter_assets/assets/images/Sunny.png</key>
 		<data>
 		UaoPP6vdUXONiuy+MDtRGENVJQc=
+		</data>
+		<key>flutter_assets/assets/images/appicon.png</key>
+		<data>
+		i4QpaufwqVNYpftiNx5rKsg9rMk=
 		</data>
 		<key>flutter_assets/assets/images/background1.png</key>
 		<data>
@@ -98,7 +102,7 @@
 		</data>
 		<key>flutter_assets/kernel_blob.bin</key>
 		<data>
-		AB86uUMs7OJPTrWbCX/MmxTI7e8=
+		vUsSOh5+Zis5Bl+6BuTrt6EwEtw=
 		</data>
 		<key>flutter_assets/packages/cupertino_icons/assets/CupertinoIcons.ttf</key>
 		<data>
@@ -119,14 +123,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			tyBxxVLuphenu289lhAAJ1SDiGDaDJsN15Yrt5ZqgwU=
+			JScjXbVjjk6ujsyov1hhRJuwFBjKp1gPoy6UMurTTY4=
 			</data>
 		</dict>
 		<key>flutter_assets/AssetManifest.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			7WJHxvKfPoAvDw0tYIw1086PhuKaZupL7ewpqnb+Gf8=
+			gyRRfacAYCEW9NKNQwMgD4V7wELVXzxIOFMHePoyvbc=
 			</data>
 		</dict>
 		<key>flutter_assets/FontManifest.json</key>
@@ -140,7 +144,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			M+bv8PiaStS8weRoto/pUGyyZzwliH9f873coBr3U9U=
+			70gmhxojI1bJ6ecFCDXAKXFSDFQnMfnnYgnApqw1huA=
 			</data>
 		</dict>
 		<key>flutter_assets/NativeAssetsManifest.json</key>
@@ -190,6 +194,13 @@
 			<key>hash2</key>
 			<data>
 			KeTGuvnyRj+nWiqJpKQkqcTZ9gRBFl5+H0tGYCjM+9k=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/images/appicon.png</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			kRvufHuHkQagNVWEpPB952L5sJekEA71XEU4sxrawp0=
 			</data>
 		</dict>
 		<key>flutter_assets/assets/images/background1.png</key>
@@ -273,7 +284,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			ghg0VIsL36keCPXv2mJ+BhU/vZuhtPkH8u0UDdXb1wc=
+			qH+J9BmIeHglgt9pu+WelLNCFt0GP3RFhqot3UxGEdg=
 			</data>
 		</dict>
 		<key>flutter_assets/packages/cupertino_icons/assets/CupertinoIcons.ttf</key>
