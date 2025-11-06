@@ -68,48 +68,97 @@ class DateWeatherWidget extends StatelessWidget {
     final String temp = '${temperature.toStringAsFixed(1)}°F';
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-      margin: const EdgeInsets.symmetric(vertical: 12),
+      padding: const EdgeInsets.all(20),
+      margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        gradient: const LinearGradient(
-          colors: [Colors.lightGreen, Colors.white],
+        borderRadius: BorderRadius.circular(16),
+        gradient: LinearGradient(
+          colors: [
+            const Color(0xFF1a1a2e),
+            const Color(0xFF16213e).withOpacity(0.8),
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        boxShadow: const [
-          BoxShadow(color: Colors.black26, blurRadius: 6, offset: Offset(2, 4)),
+        border: Border.all(
+          color: Colors.teal.shade800.withOpacity(0.3),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.3),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
         ],
       ),
-      child: Wrap(
-        spacing: 10,
-        runSpacing: 5,
-        alignment: WrapAlignment.center,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _stripItem('🗓', dateWithSuffix),
-          _stripItem('⏰', formattedTime),
-          _stripItem('🌤️', condition),
-          _stripItem('🌡️', temp),
+          _buildInfoColumn(
+            Icons.calendar_today_outlined,
+            'Date',
+            dateWithSuffix,
+            Colors.teal.shade300,
+          ),
+          _buildDivider(),
+          _buildInfoColumn(
+            Icons.access_time_outlined,
+            'Time',
+            formattedTime,
+            Colors.blue.shade300,
+          ),
+          _buildDivider(),
+          _buildInfoColumn(
+            Icons.wb_sunny_outlined,
+            'Weather',
+            condition,
+            Colors.amber.shade300,
+          ),
+          _buildDivider(),
+          _buildInfoColumn(
+            Icons.thermostat_outlined,
+            'Temp',
+            temp,
+            Colors.orange.shade300,
+          ),
         ],
       ),
     );
   }
 
-  Widget _stripItem(String emoji, String text) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
+  Widget _buildInfoColumn(IconData icon, String label, String value, Color color) {
+    return Column(
       children: [
-        Text(emoji, style: const TextStyle(fontSize: 18)),
-        const SizedBox(width: 6),
+        Icon(icon, color: color, size: 22),
+        const SizedBox(height: 8),
         Text(
-          text,
-          style: const TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
-            color: Colors.black,
+          label,
+          style: TextStyle(
+            fontSize: 10,
+            color: Colors.grey.shade600,
+            fontWeight: FontWeight.w500,
           ),
         ),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: Colors.grey.shade300,
+          ),
+          textAlign: TextAlign.center,
+        ),
       ],
+    );
+  }
+
+  Widget _buildDivider() {
+    return Container(
+      width: 1,
+      height: 50,
+      color: Colors.grey.shade800,
     );
   }
 }

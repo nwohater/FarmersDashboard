@@ -7,7 +7,7 @@ class FarmWidget extends StatelessWidget {
   final double? loanAmount;
 
   static final NumberFormat _currencyFormatter =
-  NumberFormat.currency(locale: 'en_US', symbol: '\$');
+      NumberFormat.currency(locale: 'en_US', symbol: '\$');
 
   const FarmWidget({
     super.key,
@@ -18,90 +18,139 @@ class FarmWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final netWorth = loanAmount != null ? money - loanAmount! : money;
+    final isPositive = netWorth >= 0;
+
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 4),
-      padding: const EdgeInsets.all(12),
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Colors.yellow, Colors.white], // Teal gradient
+        gradient: LinearGradient(
+          colors: [
+            const Color(0xFF1a1a2e),
+            const Color(0xFF16213e).withOpacity(0.8),
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.teal, width: 1),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Colors.teal.shade800.withOpacity(0.3),
+          width: 1,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 4,
-            offset: const Offset(2, 2),
+            color: Colors.black.withOpacity(0.3),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Farm icon
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: Colors.green,
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Icons.agriculture,
-              color: Colors.white,
-              size: 24,
-            ),
-          ),
-          const SizedBox(width: 12),
-          // Farm details
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Farm name
-                Text(
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.teal.shade900.withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  Icons.agriculture_outlined,
+                  color: Colors.teal.shade300,
+                  size: 24,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Text(
                   farmName,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.teal,
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.grey.shade100,
+                    letterSpacing: 0.5,
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 4),
-                // Money & Debt
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      _currencyFormatter.format(money),
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: money < 0 ? Colors.red[700] : Colors.green[800],
-                      ),
-                    ),
-                    if (loanAmount != null)
-                      Text(
-                        loanAmount! > 0
-                            ? 'Debt: ${_currencyFormatter.format(loanAmount)}'
-                            : 'Debt Free!',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: loanAmount! > 0
-                              ? Colors.red
-                              : Colors.green[700],
-                        ),
-                      ),
-                  ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Divider(color: Colors.grey.shade800, height: 1),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: _buildStatColumn(
+                  'Balance',
+                  _currencyFormatter.format(money),
+                  Colors.teal.shade300,
+                  Icons.account_balance_wallet_outlined,
+                ),
+              ),
+              if (loanAmount != null && loanAmount! > 0) ...[
+                Container(
+                  width: 1,
+                  height: 40,
+                  color: Colors.grey.shade800,
+                ),
+                Expanded(
+                  child: _buildStatColumn(
+                    'Loan',
+                    _currencyFormatter.format(loanAmount),
+                    Colors.red.shade300,
+                    Icons.trending_down,
+                  ),
                 ),
               ],
-            ),
+              Container(
+                width: 1,
+                height: 40,
+                color: Colors.grey.shade800,
+              ),
+              Expanded(
+                child: _buildStatColumn(
+                  'Net Worth',
+                  _currencyFormatter.format(netWorth),
+                  isPositive ? Colors.green.shade300 : Colors.red.shade300,
+                  isPositive ? Icons.trending_up : Icons.trending_down,
+                ),
+              ),
+            ],
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildStatColumn(String label, String value, Color color, IconData icon) {
+    return Column(
+      children: [
+        Icon(icon, color: color, size: 20),
+        const SizedBox(height: 8),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 11,
+            color: Colors.grey.shade500,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: color,
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ],
     );
   }
 }

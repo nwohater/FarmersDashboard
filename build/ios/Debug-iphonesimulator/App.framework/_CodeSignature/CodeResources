@@ -6,15 +6,15 @@
 	<dict>
 		<key>Info.plist</key>
 		<data>
-		h5OB7aKzS5WR9SemvZAyN6FEkJs=
+		T7ae0s1yqPVdrLK0y5gqABVb1PU=
 		</data>
 		<key>flutter_assets/AssetManifest.bin</key>
 		<data>
-		Bb48mTMLeJcWvf0wYe8XuUzVcN4=
+		doZ0J6hFhpN6fPeSTwONoZjT36w=
 		</data>
 		<key>flutter_assets/AssetManifest.json</key>
 		<data>
-		sx/zjZiFQDb+FRvFmOLqpUxZkEE=
+		p3mwvxDnSEIB+XmZKoZg0z2hQq4=
 		</data>
 		<key>flutter_assets/FontManifest.json</key>
 		<data>
@@ -22,7 +22,7 @@
 		</data>
 		<key>flutter_assets/NOTICES.Z</key>
 		<data>
-		bZPs0LCqw5NU/7CabQ8jzxTC3OA=
+		An435Ole3Th2ieOQOdgNFRZ5VZo=
 		</data>
 		<key>flutter_assets/NativeAssetsManifest.json</key>
 		<data>
@@ -60,6 +60,10 @@
 		<data>
 		nN7G4e64FQOvSGHQemn245eJIHY=
 		</data>
+		<key>flutter_assets/assets/images/barn1.png</key>
+		<data>
+		jDwjxLXWOO4ZP9zfsb23j3+i/Ho=
+		</data>
 		<key>flutter_assets/assets/images/farmer1.png</key>
 		<data>
 		0HL98CZju7YZFroUuNUyN84+Uaw=
@@ -72,9 +76,17 @@
 		<data>
 		9Irc0WyoU7IR8Nq5wu1nbUaRt40=
 		</data>
+		<key>flutter_assets/assets/images/switch2.png</key>
+		<data>
+		E6BAexoIPi15DCaeGaHK8QLSdCc=
+		</data>
 		<key>flutter_assets/assets/images/tractor1.png</key>
 		<data>
 		EJMZB4qepaLGkRd3z1bUNAma7pU=
+		</data>
+		<key>flutter_assets/assets/images/weather.png</key>
+		<data>
+		O1feXzTJGnK1ks/u1BA9/G/oNnQ=
 		</data>
 		<key>flutter_assets/fonts/MaterialIcons-Regular.otf</key>
 		<data>
@@ -82,11 +94,11 @@
 		</data>
 		<key>flutter_assets/isolate_snapshot_data</key>
 		<data>
-		PgYZNgZ7nxC3tFt+nGCEL6wxuNY=
+		jFlVxVvs0GUk3gpipcs+5qzuKEw=
 		</data>
 		<key>flutter_assets/kernel_blob.bin</key>
 		<data>
-		j5exMSlQZKMQPDKxX1BdIqLtazY=
+		AB86uUMs7OJPTrWbCX/MmxTI7e8=
 		</data>
 		<key>flutter_assets/packages/cupertino_icons/assets/CupertinoIcons.ttf</key>
 		<data>
@@ -98,7 +110,7 @@
 		</data>
 		<key>flutter_assets/vm_snapshot_data</key>
 		<data>
-		SoHnDHqzNKozN7o/zhsvOoXVErY=
+		yyq5EcsmxYyBwFjTZrLTRBq4XWU=
 		</data>
 	</dict>
 	<key>files2</key>
@@ -107,14 +119,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			TBnJAcv4+ry9WfmibCBx1LsPbulKOOcCpiTxduZwtZQ=
+			tyBxxVLuphenu289lhAAJ1SDiGDaDJsN15Yrt5ZqgwU=
 			</data>
 		</dict>
 		<key>flutter_assets/AssetManifest.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			/utBYvdHHxe5iEF4m0YLbNIvFWUQHGj0DH3GVSPs6ZQ=
+			7WJHxvKfPoAvDw0tYIw1086PhuKaZupL7ewpqnb+Gf8=
 			</data>
 		</dict>
 		<key>flutter_assets/FontManifest.json</key>
@@ -128,7 +140,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			YjYR+UwCblN0Kk7Xx02BWSHSHGtE19YGW0sf4ICQJUg=
+			M+bv8PiaStS8weRoto/pUGyyZzwliH9f873coBr3U9U=
 			</data>
 		</dict>
 		<key>flutter_assets/NativeAssetsManifest.json</key>
@@ -194,6 +206,13 @@
 			CnIdCXvyxci2aSqUQqkQUl34mk0mSJ9Fab1WHYxMc8Q=
 			</data>
 		</dict>
+		<key>flutter_assets/assets/images/barn1.png</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			UTtA89LBymuNjETeno5puLnZ1dYNoCPaK0Can3l+7zo=
+			</data>
+		</dict>
 		<key>flutter_assets/assets/images/farmer1.png</key>
 		<dict>
 			<key>hash2</key>
@@ -215,11 +234,25 @@
 			fr115H0UuM6xbZty7eNh2c405phYjXFQ/8WoqrLi8A0=
 			</data>
 		</dict>
+		<key>flutter_assets/assets/images/switch2.png</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			3i7mhCJcAm0gGjKqCP1oVgGzjUnykbf35kajbz4vojo=
+			</data>
+		</dict>
 		<key>flutter_assets/assets/images/tractor1.png</key>
 		<dict>
 			<key>hash2</key>
 			<data>
 			ttcvyvK8yLKIGOLrj6OzhI3Hj2u77lzyXiDFowExDiU=
+			</data>
+		</dict>
+		<key>flutter_assets/assets/images/weather.png</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			V4NeX2ngdrg/pCQEb/XOBdQHfvfFbmWA8qRqPBJ8xfk=
 			</data>
 		</dict>
 		<key>flutter_assets/fonts/MaterialIcons-Regular.otf</key>
@@ -233,14 +266,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			Y6T4MBhQBv9hSvbFzkj/7l2qb75MlOBIl0B6jKveoKE=
+			AGMtrneYCkzky8gN/u4wEEHSYfcyPTl63SSnj7+fRpU=
 			</data>
 		</dict>
 		<key>flutter_assets/kernel_blob.bin</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			RnaelqytISOL+9N3jPiD0jx/xtailTrR2r57B+W4EGk=
+			ghg0VIsL36keCPXv2mJ+BhU/vZuhtPkH8u0UDdXb1wc=
 			</data>
 		</dict>
 		<key>flutter_assets/packages/cupertino_icons/assets/CupertinoIcons.ttf</key>
@@ -261,7 +294,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			RTqty/gYjcrXxgR3QLjNukvL8gGpfV6MdaYktQJaIa8=
+			9GUhMA+MB30KbahT/4tgci98x/CLK+R2R7dFrti99M8=
 			</data>
 		</dict>
 	</dict>

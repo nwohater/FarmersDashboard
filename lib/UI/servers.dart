@@ -42,24 +42,34 @@ class _ServersSelectionScreenState extends State<ServersSelectionScreen> {
   Future<void> _deleteConnection(int id) async {
     final confirm = await showDialog<bool>(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            title: const Text('Delete Connection'),
-            content: const Text(
-              'Are you sure you want to delete this connection?',
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1a1a2e),
+        title: Text(
+          'Delete Connection',
+          style: TextStyle(color: Colors.grey.shade200),
+        ),
+        content: Text(
+          'Are you sure you want to delete this connection?',
+          style: TextStyle(color: Colors.grey.shade400),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(
+              'Cancel',
+              style: TextStyle(color: Colors.grey.shade400),
             ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: const Text('Cancel'),
-              ),
-              ElevatedButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                child: const Text('Delete'),
-              ),
-            ],
           ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red.shade900,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
     );
 
     if (confirm == true) {
@@ -74,14 +84,15 @@ class _ServersSelectionScreenState extends State<ServersSelectionScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Edit Servers',
+          'Manage Servers',
           style: TextStyle(
             color: Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 22,
+            fontWeight: FontWeight.w600,
+            fontSize: 20,
           ),
         ),
-        backgroundColor: Colors.green,
+        backgroundColor: const Color(0xFF1a1a2e),
+        elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () async {
@@ -104,81 +115,190 @@ class _ServersSelectionScreenState extends State<ServersSelectionScreen> {
           },
         ),
       ),
-      body:
-          _connections.isEmpty
-              ? Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.add_circle_outline,
-                      size: 64,
-                      color: Colors.grey[400],
+      backgroundColor: const Color(0xFF0f0f1e),
+      body: _connections.isEmpty
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.dns_outlined,
+                    size: 64,
+                    color: Colors.grey.shade700,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'No servers found',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey.shade500,
                     ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'No servers found',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.grey[600],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Click the + button to add your first server',
+                    style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            )
+          : ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: _connections.length,
+              itemBuilder: (context, index) {
+                final conn = _connections[index];
+                final serverName = conn['servername']?.toString().isNotEmpty == true
+                    ? conn['servername']
+                    : conn['host'];
+                final isDefault = (conn['isdefault'] ?? 0) == 1;
+
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        const Color(0xFF1a1a2e),
+                        const Color(0xFF16213e).withOpacity(0.8),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: isDefault
+                          ? Colors.teal.shade700.withOpacity(0.5)
+                          : Colors.teal.shade800.withOpacity(0.3),
+                      width: isDefault ? 2 : 1,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Click the + button to add your first server',
-                      style: TextStyle(fontSize: 16, color: Colors.grey[500]),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              )
-              : ListView.builder(
-                itemCount: _connections.length,
-                itemBuilder: (context, index) {
-                  final conn = _connections[index];
-                  return ListTile(
-                    title: Text(
-                      conn['servername']?.toString().isNotEmpty == true
-                          ? conn['servername']
-                          : conn['host'],
-                      style: const TextStyle(
-                        fontFamily: 'Roboto',
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.teal,
-                      ),
-                    ),
-                    subtitle: Text(
-                      '${(conn['protocol'] ?? '').toString().toUpperCase()} | ${conn['host']}:${conn['port']}',
-                      style: const TextStyle(
-                        fontFamily: 'Roboto',
-                        fontSize: 14,
-                        fontWeight: FontWeight.normal,
-                        color: Colors.black54,
-                      ),
-                    ),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
+                    ],
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
                       children: [
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.teal.shade900.withOpacity(0.3),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Icon(
+                            Icons.dns_outlined,
+                            color: Colors.teal.shade300,
+                            size: 28,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Flexible(
+                                    child: Text(
+                                      serverName,
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.grey.shade200,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  if (isDefault) ...[
+                                    const SizedBox(width: 8),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 4,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Colors.teal.shade900.withOpacity(0.4),
+                                        borderRadius: BorderRadius.circular(8),
+                                        border: Border.all(
+                                          color: Colors.teal.shade700.withOpacity(0.5),
+                                        ),
+                                      ),
+                                      child: Text(
+                                        'DEFAULT',
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.teal.shade300,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                              const SizedBox(height: 6),
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.security,
+                                    size: 14,
+                                    color: Colors.grey.shade600,
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    (conn['protocol'] ?? '').toString().toUpperCase(),
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey.shade600,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Icon(
+                                    Icons.language,
+                                    size: 14,
+                                    color: Colors.grey.shade600,
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Flexible(
+                                    child: Text(
+                                      '${conn['host']}:${conn['port']}',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.grey.shade500,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
                         IconButton(
-                          icon: const Icon(Icons.edit, color: Colors.teal),
+                          icon: Icon(Icons.edit_outlined, color: Colors.teal.shade400),
                           onPressed: () {
                             _showAddEditDialog(existing: conn);
                           },
                         ),
                         IconButton(
-                          icon: const Icon(Icons.delete, color: Colors.red),
+                          icon: Icon(Icons.delete_outline, color: Colors.red.shade400),
                           onPressed: () => _deleteConnection(conn['id']),
                         ),
                       ],
                     ),
-                  );
-                },
-              ),
+                  ),
+                );
+              },
+            ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showAddEditDialog(),
-        child: const Icon(Icons.add),
+        backgroundColor: Colors.teal.shade700,
+        child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }
@@ -263,25 +383,33 @@ class _AddEditConnectionDialogState extends State<AddEditConnectionDialog> {
       final cleanHost = hostText.replaceAll(RegExp(r'^(sftp|ftp)://'), '');
       final shouldContinue = await showDialog<bool>(
         context: context,
-        builder:
-            (context) => AlertDialog(
-              title: const Text('Protocol Detected'),
-              content: Text(
-                'The host field contains a protocol prefix (${hostText.startsWith('sftp://') ? 'sftp://' : 'ftp://'}). '
-                'This should be removed as the protocol is selected separately.\n\n'
-                'Would you like to automatically remove it and continue?',
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(false),
-                  child: const Text('Cancel'),
-                ),
-                ElevatedButton(
-                  onPressed: () => Navigator.of(context).pop(true),
-                  child: const Text('Remove & Continue'),
-                ),
-              ],
+        builder: (context) => AlertDialog(
+          backgroundColor: const Color(0xFF1a1a2e),
+          title: Text(
+            'Protocol Detected',
+            style: TextStyle(color: Colors.grey.shade200),
+          ),
+          content: Text(
+            'The host field contains a protocol prefix (${hostText.startsWith('sftp://') ? 'sftp://' : 'ftp://'}). '
+            'This should be removed as the protocol is selected separately.\n\n'
+            'Would you like to automatically remove it and continue?',
+            style: TextStyle(color: Colors.grey.shade400),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text('Cancel', style: TextStyle(color: Colors.grey.shade400)),
             ),
+            ElevatedButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.teal.shade700,
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Remove & Continue'),
+            ),
+          ],
+        ),
       );
 
       if (shouldContinue == true) {
@@ -298,25 +426,33 @@ class _AddEditConnectionDialogState extends State<AddEditConnectionDialog> {
     if (!pathText.endsWith('farmersDB.json')) {
       final shouldContinue = await showDialog<bool>(
         context: context,
-        builder:
-            (context) => AlertDialog(
-              title: const Text('Path Validation'),
-              content: Text(
-                'The path should end with "farmersDB.json".\n\n'
-                'Current path: $pathText\n\n'
-                'Would you like to automatically append "farmersDB.json" to the path?',
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(false),
-                  child: const Text('Cancel'),
-                ),
-                ElevatedButton(
-                  onPressed: () => Navigator.of(context).pop(true),
-                  child: const Text('Append & Continue'),
-                ),
-              ],
+        builder: (context) => AlertDialog(
+          backgroundColor: const Color(0xFF1a1a2e),
+          title: Text(
+            'Path Validation',
+            style: TextStyle(color: Colors.grey.shade200),
+          ),
+          content: Text(
+            'The path should end with "farmersDB.json".\n\n'
+            'Current path: $pathText\n\n'
+            'Would you like to automatically append "farmersDB.json" to the path?',
+            style: TextStyle(color: Colors.grey.shade400),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text('Cancel', style: TextStyle(color: Colors.grey.shade400)),
             ),
+            ElevatedButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.teal.shade700,
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Append & Continue'),
+            ),
+          ],
+        ),
       );
 
       if (shouldContinue == true) {
@@ -365,99 +501,271 @@ class _AddEditConnectionDialogState extends State<AddEditConnectionDialog> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final dialogWidth = screenWidth * 0.9; // for example: 90% of screen width
+    final dialogWidth = screenWidth * 0.9;
 
     return Dialog(
+      backgroundColor: const Color(0xFF1a1a2e),
       insetPadding: const EdgeInsets.all(16),
-      // optional: padding around the dialog
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        side: BorderSide(
+          color: Colors.teal.shade800.withOpacity(0.3),
+          width: 1,
+        ),
+      ),
       child: Container(
         width: dialogWidth,
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          gradient: LinearGradient(
+            colors: [
+              const Color(0xFF1a1a2e),
+              const Color(0xFF16213e).withOpacity(0.8),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
         child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                widget.connection == null
-                    ? 'Add Connection'
-                    : 'Edit Connection',
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.teal,
-                ),
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.teal.shade900.withOpacity(0.3),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(
+                      widget.connection == null ? Icons.add : Icons.edit,
+                      color: Colors.teal.shade300,
+                      size: 24,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    widget.connection == null ? 'Add Server' : 'Edit Server',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey.shade200,
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 24),
               Form(
                 key: _formKey,
                 child: Column(
                   children: [
                     TextFormField(
                       controller: _servernameController,
-                      decoration: const InputDecoration(
+                      style: TextStyle(color: Colors.grey.shade200),
+                      decoration: InputDecoration(
                         labelText: 'Server Name',
+                        labelStyle: TextStyle(color: Colors.grey.shade500),
                         helperText: 'Max 20 characters',
+                        helperStyle: TextStyle(color: Colors.grey.shade600),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.grey.shade700),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.teal.shade600, width: 2),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        filled: true,
+                        fillColor: const Color(0xFF0f0f1e),
                       ),
                       maxLength: 20,
-                      buildCounter:
-                          (
-                            context, {
-                            required currentLength,
-                            required isFocused,
-                            maxLength,
-                          }) => null,
+                      buildCounter: (context, {required currentLength, required isFocused, maxLength}) => null,
+                      enableSuggestions: false,
+                      autocorrect: false,
                     ),
+                    const SizedBox(height: 16),
                     TextFormField(
                       controller: _hostController,
-                      decoration: const InputDecoration(labelText: 'Host'),
+                      style: TextStyle(color: Colors.grey.shade200),
+                      decoration: InputDecoration(
+                        labelText: 'Host',
+                        labelStyle: TextStyle(color: Colors.grey.shade500),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.grey.shade700),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.teal.shade600, width: 2),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        filled: true,
+                        fillColor: const Color(0xFF0f0f1e),
+                      ),
+                      enableSuggestions: false,
+                      autocorrect: false,
+                      keyboardType: TextInputType.url,
                     ),
+                    const SizedBox(height: 16),
                     TextFormField(
                       controller: _portController,
-                      decoration: const InputDecoration(labelText: 'Port'),
+                      style: TextStyle(color: Colors.grey.shade200),
+                      decoration: InputDecoration(
+                        labelText: 'Port',
+                        labelStyle: TextStyle(color: Colors.grey.shade500),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.grey.shade700),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.teal.shade600, width: 2),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        filled: true,
+                        fillColor: const Color(0xFF0f0f1e),
+                      ),
                       keyboardType: TextInputType.number,
+                      enableSuggestions: false,
+                      autocorrect: false,
                     ),
+                    const SizedBox(height: 16),
                     TextFormField(
                       controller: _pathController,
-                      decoration: const InputDecoration(
+                      style: TextStyle(color: Colors.grey.shade200),
+                      decoration: InputDecoration(
                         labelText: 'Path To farmersDB.json',
+                        labelStyle: TextStyle(color: Colors.grey.shade500),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.grey.shade700),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.teal.shade600, width: 2),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        filled: true,
+                        fillColor: const Color(0xFF0f0f1e),
                       ),
+                      enableSuggestions: false,
+                      autocorrect: false,
+                      keyboardType: TextInputType.url,
                     ),
+                    const SizedBox(height: 16),
                     TextFormField(
                       controller: _usernameController,
-                      decoration: const InputDecoration(labelText: 'Username'),
+                      style: TextStyle(color: Colors.grey.shade200),
+                      decoration: InputDecoration(
+                        labelText: 'Username',
+                        labelStyle: TextStyle(color: Colors.grey.shade500),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.grey.shade700),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.teal.shade600, width: 2),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        filled: true,
+                        fillColor: const Color(0xFF0f0f1e),
+                      ),
+                      enableSuggestions: false,
+                      autocorrect: false,
+                      keyboardType: TextInputType.emailAddress,
                     ),
+                    const SizedBox(height: 16),
                     TextFormField(
                       controller: _passwordController,
-                      decoration: const InputDecoration(labelText: 'Password'),
+                      style: TextStyle(color: Colors.grey.shade200),
+                      decoration: InputDecoration(
+                        labelText: 'Password',
+                        labelStyle: TextStyle(color: Colors.grey.shade500),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.grey.shade700),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.teal.shade600, width: 2),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        filled: true,
+                        fillColor: const Color(0xFF0f0f1e),
+                      ),
                       obscureText: true,
+                      enableSuggestions: false,
+                      autocorrect: false,
+                      keyboardType: TextInputType.visiblePassword,
                     ),
+                    const SizedBox(height: 16),
                     DropdownButtonFormField<String>(
                       value: _protocol,
-                      decoration: const InputDecoration(labelText: 'Protocol'),
+                      style: TextStyle(color: Colors.grey.shade200),
+                      dropdownColor: const Color(0xFF1a1a2e),
+                      decoration: InputDecoration(
+                        labelText: 'Protocol',
+                        labelStyle: TextStyle(color: Colors.grey.shade500),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.grey.shade700),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.teal.shade600, width: 2),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        filled: true,
+                        fillColor: const Color(0xFF0f0f1e),
+                      ),
                       items: const [
                         DropdownMenuItem(value: 'sftp', child: Text('SFTP')),
                         DropdownMenuItem(value: 'ftp', child: Text('FTP')),
                       ],
                       onChanged: (v) => setState(() => _protocol = v ?? 'sftp'),
                     ),
-                    CheckboxListTile(
-                      title: const Text('Default'),
-                      value: _isDefault,
-                      onChanged: (v) => setState(() => _isDefault = v ?? false),
+                    const SizedBox(height: 8),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF0f0f1e),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.grey.shade700),
+                      ),
+                      child: CheckboxListTile(
+                        title: Text(
+                          'Set as Default Server',
+                          style: TextStyle(color: Colors.grey.shade300),
+                        ),
+                        value: _isDefault,
+                        activeColor: Colors.teal.shade600,
+                        checkColor: Colors.white,
+                        onChanged: (v) => setState(() => _isDefault = v ?? false),
+                      ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 24),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   TextButton(
                     onPressed: () => Navigator.of(context).pop(),
-                    child: const Text('Cancel'),
+                    child: Text(
+                      'Cancel',
+                      style: TextStyle(color: Colors.grey.shade400),
+                    ),
                   ),
-                  const SizedBox(width: 8),
-                  ElevatedButton(onPressed: _save, child: const Text('Save')),
+                  const SizedBox(width: 12),
+                  ElevatedButton(
+                    onPressed: _save,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.teal.shade700,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text('Save'),
+                  ),
                 ],
               ),
             ],

@@ -15,148 +15,165 @@ class SpecialOfferWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 6,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      child: Container(
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [Color(0xFF388E3C), Color(0xFF81C784)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(20),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            const Color(0xFF1a1a2e),
+            const Color(0xFF16213e).withOpacity(0.8),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Top row: Brand and Bank of Debt
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                if (offer.brand.isNotEmpty)
-                  Row(
-                    children: [
-                      const Icon(Icons.agriculture,
-                          color: Colors.white, size: 18),
-                      const SizedBox(width: 4),
-                      Text(
-                        offer.brand,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                          shadows: [
-                            Shadow(blurRadius: 2, color: Colors.black45)
-                          ],
-                        ),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Colors.amber.shade900.withOpacity(0.3),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.3),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              if (offer.brand.isNotEmpty)
+                Row(
+                  children: [
+                    Icon(Icons.local_offer_outlined,
+                        color: Colors.amber.shade300, size: 18),
+                    const SizedBox(width: 8),
+                    Text(
+                      offer.brand,
+                      style: TextStyle(
+                        color: Colors.grey.shade300,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                        letterSpacing: 0.5,
                       ),
-                    ],
+                    ),
+                  ],
+                ),
+              if (offer.percentOff > 0)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.red.shade900.withOpacity(0.4),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: Colors.red.shade700.withOpacity(0.5)),
                   ),
+                  child: Text(
+                    '${offer.percentOff}% OFF',
+                    style: TextStyle(
+                      color: Colors.red.shade300,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            offer.name,
+            style: TextStyle(
+              color: Colors.grey.shade100,
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.3,
+            ),
+          ),
+          if (offer.type != null && offer.type!.isNotEmpty) ...[
+            const SizedBox(height: 4),
+            Text(
+              offer.type!,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w400,
+                color: Colors.grey.shade500,
+              ),
+            ),
+          ],
+          const SizedBox(height: 16),
+          Divider(color: Colors.grey.shade800, height: 1),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Sale Price',
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: Colors.grey.shade600,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    _currencyFormatter.format(offer.price),
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.green.shade300,
+                    ),
+                  ),
+                ],
+              ),
+              if (offer.originalPrice > 0 && offer.originalPrice != offer.price)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      'Original',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      _currencyFormatter.format(offer.originalPrice),
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey.shade500,
+                        decoration: TextDecoration.lineThrough,
+                        decorationColor: Colors.red.shade400,
+                      ),
+                    ),
+                  ],
+                ),
+            ],
+          ),
+          if (offer.age > 0) ...[
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Icon(Icons.history, size: 14, color: Colors.grey.shade600),
+                const SizedBox(width: 6),
                 Text(
-                  'BANK OF DEBT',
+                  'Age: ${offer.age} months',
                   style: TextStyle(
                     fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white.withOpacity(0.85),
-                    letterSpacing: 1.2,
-                    shadows: const [Shadow(blurRadius: 1, color: Colors.black26)],
+                    color: Colors.grey.shade500,
                   ),
                 ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            // Name and type
-            Text(
-              offer.name,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-                shadows: [Shadow(blurRadius: 2, color: Colors.black45)],
-              ),
-            ),
-            if (offer.type != null && offer.type!.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.only(top: 2),
-                child: Text(
-                  offer.type!,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.white70,
-                  ),
-                ),
-              ),
-            const SizedBox(height: 12),
-            // Pricing
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  _currencyFormatter.format(offer.price),
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    shadows: [Shadow(blurRadius: 2, color: Colors.black54)],
-                  ),
-                ),
-                if (offer.originalPrice > 0 &&
-                    offer.originalPrice != offer.price)
-                  Text(
-                    _currencyFormatter.format(offer.originalPrice),
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Colors.redAccent,
-                      decoration: TextDecoration.lineThrough,
-                    ),
-                  ),
-              ],
-            ),
-            // Extra info row (Discount, Age)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                if (offer.percentOff > 0)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8.0),
-                    child: Chip(
-                      backgroundColor: Colors.deepOrange,
-                      label: Text(
-                        '${offer.percentOff}% OFF',
-                        style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold),
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 4),
-                    ),
-                  ),
-                if (offer.age > 0)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8.0),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.access_time,
-                            size: 14, color: Colors.white70),
-                        const SizedBox(width: 4),
-                        Text(
-                          'Months: ${offer.age}',
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: Colors.white70,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
               ],
             ),
           ],
-        ),
+        ],
       ),
     );
   }

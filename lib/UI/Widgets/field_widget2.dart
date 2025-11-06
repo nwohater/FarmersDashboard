@@ -39,11 +39,6 @@ class FieldWidget extends StatelessWidget {
     final acres = (field.fieldAreaHa * 2.47105).toStringAsFixed(2);
     final bool harvested = field.growthStateLabel.toLowerCase() == 'harvested';
     final bool readyToHarvest = field.growthStateLabel.toLowerCase() == 'ready to harvest';
-    final Color bgColor = harvested
-        ? Colors.brown.shade100
-        : readyToHarvest
-        ? Colors.yellow.shade100
-        : Colors.green.shade50;
 
     // Dynamically parse total stages from the label
     final int totalStages = _parseTotalStages(field.growthStateLabel);
@@ -51,69 +46,146 @@ class FieldWidget extends StatelessWidget {
     // Only show expected harvest if not ready
     final String? expectedMonth = !readyToHarvest
         ? _expectedHarvestMonth(
-      field.growthState,
-      totalStages,
-      currentMonth, // +1 to adjust for 0-indexed month
-    )
+            field.growthState,
+            totalStages,
+            currentMonth,
+          )
         : null;
 
+    // Determine status color
+    Color statusColor;
+    IconData statusIcon;
+    if (harvested) {
+      statusColor = Colors.brown.shade400;
+      statusIcon = Icons.check_circle_outline;
+    } else if (readyToHarvest) {
+      statusColor = Colors.amber.shade400;
+      statusIcon = Icons.agriculture;
+    } else {
+      statusColor = Colors.green.shade400;
+      statusIcon = Icons.spa_outlined;
+    }
+
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 4),
+      margin: const EdgeInsets.only(bottom: 4),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.teal, width: 1), // 🟩 Thin teal border
+        color: const Color(0xFF16213e).withOpacity(0.5),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: statusColor.withOpacity(0.3),
+          width: 1,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 2,
-            offset: const Offset(1, 1),
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Top Row: Field ID (left), Crop (right)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "Field ID: ${field.fieldId}",
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(statusIcon, color: statusColor, size: 18),
+              const SizedBox(width: 8),
+              Text(
+                "Field ${field.fieldId}",
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 15,
+                  color: Colors.grey.shade300,
                 ),
-                Text(
-                  "Crop: ${field.fruitType}",
-                  style: const TextStyle(fontStyle: FontStyle.italic),
+              ),
+              const Spacer(),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: statusColor.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: statusColor.withOpacity(0.4)),
                 ),
-              ],
-            ),
-            const SizedBox(height: 4),
-            // Bottom Row: Growth (left), Acres (right)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text("Growth: ${field.growthStateLabel}"),
-                Text("Area: $acres acres"),
-              ],
-            ),
-            if (expectedMonth != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 4.0),
                 child: Text(
-                  "Expected Harvest: $expectedMonth",
-                  style: const TextStyle(
+                  field.fruitType,
+                  style: TextStyle(
                     fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.deepOrange,
+                    fontWeight: FontWeight.w600,
+                    color: statusColor,
                   ),
                 ),
               ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _buildInfoChip(
+                'Growth',
+                field.growthStateLabel,
+                Colors.grey.shade400,
+              ),
+              _buildInfoChip(
+                'Area',
+                '$acres ac',
+                Colors.teal.shade300,
+              ),
+            ],
+          ),
+          if (expectedMonth != null) ...[
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.orange.shade900.withOpacity(0.3),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.calendar_today, size: 12, color: Colors.orange.shade300),
+                  const SizedBox(width: 6),
+                  Text(
+                    "Est. Harvest: $expectedMonth",
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.orange.shade300,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ],
-        ),
+        ],
       ),
+    );
+  }
+
+  Widget _buildInfoChip(String label, String value, Color color) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 10,
+            color: Colors.grey.shade600,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: color,
+          ),
+        ),
+      ],
     );
   }
 }
