@@ -121,14 +121,14 @@ flutter_launcher_icons:
 
 # Splash Screen Configuration
 flutter_native_splash:
-  color: "#000000"
+  color: "#FFFFFF"
   image: assets/images/appicon.png
   android: true
   ios: true
   web: false
 
   android_12:
-    color: "#000000"
+    color: "#FFFFFF"
     image: assets/images/appicon.png
 
   ios_content_mode: center
