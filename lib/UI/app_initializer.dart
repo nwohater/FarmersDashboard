@@ -19,7 +19,6 @@ class _AppInitializerState extends State<AppInitializer> {
   void initState() {
     super.initState();
     // Wait for first frame to be rendered before checking state
-    // This prevents double splash screen
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkInitialState();
     });
@@ -81,11 +80,12 @@ class _AppInitializerState extends State<AppInitializer> {
 
   @override
   Widget build(BuildContext context) {
-    // Show a black screen matching the splash screen
-    // Navigation happens in initState after first frame
+    // Show a simple loading screen
     return const Scaffold(
-      backgroundColor: Color(0xFF000000),
-      body: SizedBox.shrink(),
+      backgroundColor: Colors.white,
+      body: Center(
+        child: CircularProgressIndicator(),
+      ),
     );
   }
 }
