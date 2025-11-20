@@ -40,6 +40,10 @@ class FieldWidget extends StatelessWidget {
     final bool harvested = field.growthStateLabel.toLowerCase() == 'harvested';
     final bool readyToHarvest = field.growthStateLabel.toLowerCase() == 'ready to harvest';
 
+    // Special handling for grass - check if it's the second harvest stage
+    final bool isGrass = field.fruitType.toLowerCase() == 'grass';
+    final bool isSecondHarvest = isGrass && field.growthState == 3;
+
     // Dynamically parse total stages from the label
     final int totalStages = _parseTotalStages(field.growthStateLabel);
 
@@ -52,18 +56,28 @@ class FieldWidget extends StatelessWidget {
           )
         : null;
 
-    // Determine status color
+    // Determine status color and icon
     Color statusColor;
     IconData statusIcon;
+    String displayLabel;
+
     if (harvested) {
       statusColor = Colors.brown.shade400;
       statusIcon = Icons.check_circle_outline;
+      displayLabel = field.growthStateLabel;
+    } else if (isSecondHarvest) {
+      // Grass at growth state 3 - second harvest ready
+      statusColor = Colors.orange.shade400;
+      statusIcon = Icons.agriculture;
+      displayLabel = 'Ready (2nd Stage)';
     } else if (readyToHarvest) {
       statusColor = Colors.amber.shade400;
       statusIcon = Icons.agriculture;
+      displayLabel = field.growthStateLabel;
     } else {
       statusColor = Colors.green.shade400;
       statusIcon = Icons.spa_outlined;
+      displayLabel = field.growthStateLabel;
     }
 
     return Container(
@@ -124,7 +138,7 @@ class FieldWidget extends StatelessWidget {
             children: [
               _buildInfoChip(
                 'Growth',
-                field.growthStateLabel,
+                displayLabel,
                 Colors.grey.shade400,
               ),
               _buildInfoChip(

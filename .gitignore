@@ -1,11 +1,9 @@
 # Miscellaneous
 *.class
-*.log
 *.pyc
 *.swp
 .DS_Store
 .atom/
-.build/
 .buildlog/
 .history
 .svn/
@@ -18,10 +16,12 @@ migrate_working_dir/
 *.iws
 .idea/
 
-# The .vscode folder contains launch configuration and tasks you configure in
-# VS Code which you may wish to be included in version control, so this line
-# is commented out by default.
-#.vscode/
+# VS Code
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
 
 # Flutter/Dart/Pub related
 **/doc/api/
@@ -29,16 +29,25 @@ migrate_working_dir/
 .dart_tool/
 .flutter-plugins
 .flutter-plugins-dependencies
+.fvm/
 .packages
 .pub-cache/
 .pub/
 /build/
+
+# Flutter crash logs
+flutter_*.log
 
 # Symbolication related
 app.*.symbols
 
 # Obfuscation related
 app.*.map.json
+
+# Generated files
+*.g.dart
+*.freezed.dart
+*.mocks.dart
 
 # Android Studio will place build artifacts here
 /android/app/debug
@@ -87,9 +96,6 @@ coverage/
 !**/ios/**/default.perspectivev3
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
 
-# FVM
-.fvm/
-
 # Environment files
 .env
 .env.local
@@ -110,78 +116,11 @@ fastlane/test_output
 # Temporary files
 *.tmp
 *.temp
-*.bak
-*.backup
 
 # Database files (if you want to exclude local databases)
 *.db
 *.sqlite
 *.sqlite3
-
-# Logs
-logs
-*.log
-
-# Runtime data
-pids
-*.pid
-*.seed
-*.pid.lock
-
-# Optional npm cache directory
-.npm
-
-# Optional eslint cache
-.eslintcache
-
-# Optional REPL history
-.node_repl_history
-
-# Output of 'npm pack'
-*.tgz
-
-# Yarn Integrity file
-.yarn-integrity
-
-# dotenv environment variables file
-.env
-
-# parcel-bundler cache (https://parceljs.org/)
-.cache
-.parcel-cache
-
-# next.js build output
-.next
-
-# nuxt.js build output
-.nuxt
-
-# vuepress build output
-.vuepress/dist
-
-# Serverless directories
-.serverless
-
-# FuseBox cache
-.fusebox/
-
-# DynamoDB Local files
-.dynamodb/
-
-# TernJS port file
-.tern-port
-
-# Stores VSCode versions used for testing VSCode extensions
-.vscode-test
-
-# Flutter specific
-*.lock
-pubspec.lock
-
-# Generated files
-*.g.dart
-*.freezed.dart
-*.mocks.dart
 
 # Local configuration files
 local.properties
@@ -190,19 +129,6 @@ key.properties
 # Keystore files
 *.jks
 *.keystore
-
-# Android Studio
-.idea/
-*.iml
-*.ipr
-*.iws
-
-# VS Code
-.vscode/
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
 
 # Windows
 Thumbs.db
@@ -213,11 +139,6 @@ Desktop.ini
 *~
 
 # Backup files
-*~
-*.swp
+*.bak
+*.backup
 *.swo
-*#
-
-# Temporary files
-*.tmp
-*.temp 
