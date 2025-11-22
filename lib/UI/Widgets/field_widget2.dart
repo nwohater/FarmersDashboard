@@ -43,6 +43,7 @@ class FieldWidget extends StatelessWidget {
     // Special handling for grass - check if it's the second harvest stage
     final bool isGrass = field.fruitType.toLowerCase() == 'grass';
     final bool isSecondHarvest = isGrass && field.growthState == 3;
+    final bool isFirstHarvest = isGrass && readyToHarvest && field.growthState != 3;
 
     // Dynamically parse total stages from the label
     final int totalStages = _parseTotalStages(field.growthStateLabel);
@@ -69,7 +70,12 @@ class FieldWidget extends StatelessWidget {
       // Grass at growth state 3 - second harvest ready
       statusColor = Colors.orange.shade400;
       statusIcon = Icons.agriculture;
-      displayLabel = 'Ready (2nd Stage)';
+      displayLabel = 'Ready To Harvest (Stage 2)';
+    } else if (isFirstHarvest) {
+      // Grass at first harvest stage
+      statusColor = Colors.amber.shade400;
+      statusIcon = Icons.agriculture;
+      displayLabel = 'Ready To Harvest (Stage 1)';
     } else if (readyToHarvest) {
       statusColor = Colors.amber.shade400;
       statusIcon = Icons.agriculture;

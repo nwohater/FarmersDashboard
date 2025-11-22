@@ -27,132 +27,141 @@ class ForecastWidget extends StatelessWidget {
     required this.forecastDynamicItems,
   });
 
-  Widget _buildWeatherItem({
-    required String label,
-    String? condition,
-    double? temperature,
-  }) {
-    final String imagePath = _getWeatherImage(condition ?? "Unknown");
-    final String displayCondition = condition ?? "N/A";
+  Widget _buildForecastColumn(String hour, String condition) {
+    final String imagePath = _getWeatherImage(condition);
+
+    return Column(
+      children: [
+        Icon(Icons.access_time_outlined, color: Colors.blue.shade300, size: 22),
+        const SizedBox(height: 8),
+        Text(
+          'Time',
+          style: TextStyle(
+            fontSize: 10,
+            color: Colors.grey.shade600,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          hour,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: Colors.grey.shade300,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 12),
+        Icon(Icons.wb_sunny_outlined, color: Colors.amber.shade300, size: 22),
+        const SizedBox(height: 8),
+        Text(
+          'Weather',
+          style: TextStyle(
+            fontSize: 10,
+            color: Colors.grey.shade600,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          condition,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: Colors.grey.shade300,
+          ),
+          textAlign: TextAlign.center,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDivider() {
+    return Container(
+      width: 1,
+      height: 120,
+      color: Colors.grey.shade800,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Parse forecast items (limit to 4)
+    List<Map<String, dynamic>> forecasts = [];
+    for (int i = 0; i < forecastDynamicItems.length && i < 4; i++) {
+      final dynamic itemDynamic = forecastDynamicItems[i];
+      String forecastHour = "N/A";
+      String forecastCondition = "Unknown";
+
+      if (itemDynamic is Map<String, dynamic>) {
+        forecastHour = itemDynamic['hour'] as String? ?? "Hour ${i + 1}";
+        forecastCondition = itemDynamic['condition'] as String? ?? "Unknown";
+      }
+
+      forecasts.add({
+        'hour': forecastHour,
+        'condition': forecastCondition,
+      });
+    }
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 6),
-      width: 90,
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(20),
+      margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: const Color(0xFF16213e).withOpacity(0.6),
         borderRadius: BorderRadius.circular(16),
+        gradient: LinearGradient(
+          colors: [
+            const Color(0xFF1a1a2e),
+            const Color(0xFF16213e).withOpacity(0.8),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
         border: Border.all(
           color: Colors.teal.shade800.withOpacity(0.3),
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
-            blurRadius: 6,
-            offset: const Offset(0, 3),
+            color: Colors.black.withOpacity(0.3),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+      child: Row(
         children: [
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w500,
-              color: Colors.grey.shade400,
-            ),
-            textAlign: TextAlign.center,
-            overflow: TextOverflow.ellipsis,
-          ),
-          const SizedBox(height: 8),
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: Colors.teal.shade900.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: Image.asset(
-                imagePath,
-                width: 36,
-                height: 36,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => Icon(
-                  Icons.cloud_outlined,
-                  size: 24,
-                  color: Colors.grey.shade600,
-                ),
-              ),
+          Expanded(
+            child: _buildForecastColumn(
+              forecasts.isNotEmpty ? forecasts[0]['hour'] as String : "N/A",
+              forecasts.isNotEmpty ? forecasts[0]['condition'] as String : "Unknown",
             ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            displayCondition,
-            style: TextStyle(
-              fontSize: 10,
-              color: Colors.grey.shade400,
-              fontWeight: FontWeight.w500,
+          _buildDivider(),
+          Expanded(
+            child: _buildForecastColumn(
+              forecasts.length > 1 ? forecasts[1]['hour'] as String : "N/A",
+              forecasts.length > 1 ? forecasts[1]['condition'] as String : "Unknown",
             ),
-            textAlign: TextAlign.center,
-            overflow: TextOverflow.ellipsis,
-            maxLines: 1,
           ),
-          if (temperature != null) ...[
-            const SizedBox(height: 4),
-            Text(
-              '${temperature.toStringAsFixed(0)}°F',
-              style: TextStyle(
-                fontSize: 13,
-                color: Colors.teal.shade300,
-                fontWeight: FontWeight.w600,
-              ),
+          _buildDivider(),
+          Expanded(
+            child: _buildForecastColumn(
+              forecasts.length > 2 ? forecasts[2]['hour'] as String : "N/A",
+              forecasts.length > 2 ? forecasts[2]['condition'] as String : "Unknown",
             ),
-          ],
+          ),
+          _buildDivider(),
+          Expanded(
+            child: _buildForecastColumn(
+              forecasts.length > 3 ? forecasts[3]['hour'] as String : "N/A",
+              forecasts.length > 3 ? forecasts[3]['condition'] as String : "Unknown",
+            ),
+          ),
         ],
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      height: 155,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: forecastDynamicItems.length,
-        shrinkWrap: true,
-        physics: const ClampingScrollPhysics(),
-        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        itemBuilder: (context, index) {
-          final dynamic itemDynamic = forecastDynamicItems[index];
-          String forecastHour = "N/A";
-          String forecastCondition = "Unknown";
-          double? forecastTemp;
-
-          if (itemDynamic is Map<String, dynamic>) {
-            forecastHour = itemDynamic['hour'] as String? ?? "Hour ${index + 1}";
-            forecastCondition = itemDynamic['condition'] as String? ?? "Unknown";
-            final tempFromJson = itemDynamic['temperatureF'];
-            if (tempFromJson is num) {
-              forecastTemp = tempFromJson.toDouble();
-            }
-          } else {
-            forecastHour = "Invalid";
-            forecastCondition = "Data";
-          }
-
-          return _buildWeatherItem(
-            label: forecastHour,
-            condition: forecastCondition,
-            temperature: forecastTemp,
-          );
-        },
       ),
     );
   }

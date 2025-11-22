@@ -93,34 +93,41 @@ class DateWeatherWidget extends StatelessWidget {
         ],
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _buildInfoColumn(
-            Icons.calendar_today_outlined,
-            'Date',
-            dateWithSuffix,
-            Colors.teal.shade300,
+          Expanded(
+            child: _buildInfoColumn(
+              Icons.calendar_today_outlined,
+              'Date',
+              dateWithSuffix,
+              Colors.teal.shade300,
+            ),
           ),
           _buildDivider(),
-          _buildInfoColumn(
-            Icons.access_time_outlined,
-            'Time',
-            formattedTime,
-            Colors.blue.shade300,
+          Expanded(
+            child: _buildInfoColumn(
+              Icons.access_time_outlined,
+              'Time',
+              formattedTime,
+              Colors.blue.shade300,
+            ),
           ),
           _buildDivider(),
-          _buildInfoColumn(
-            Icons.wb_sunny_outlined,
-            'Weather',
-            condition,
-            Colors.amber.shade300,
+          Expanded(
+            child: _buildInfoColumn(
+              Icons.wb_sunny_outlined,
+              'Weather',
+              condition,
+              Colors.amber.shade300,
+            ),
           ),
           _buildDivider(),
-          _buildInfoColumn(
-            Icons.thermostat_outlined,
-            'Temp',
-            temp,
-            Colors.orange.shade300,
+          Expanded(
+            child: _buildInfoColumn(
+              Icons.thermostat_outlined,
+              'Temp',
+              temp,
+              Colors.orange.shade300,
+            ),
           ),
         ],
       ),
