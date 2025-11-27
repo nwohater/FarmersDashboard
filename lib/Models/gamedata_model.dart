@@ -95,6 +95,9 @@ class Field {
   final double fieldAreaHa;
   final int farmId;
   final String farmName;
+  final int limeLevel;
+  final int sprayLevel;
+  final int weedLevel;
 
   Field({
     required this.fieldId,
@@ -104,6 +107,9 @@ class Field {
     required this.fieldAreaHa,
     required this.farmId,
     required this.farmName,
+    this.limeLevel = 0,
+    this.sprayLevel = 0,
+    this.weedLevel = 0,
   });
 
   factory Field.fromJson(Map<String, dynamic> json) => Field(
@@ -114,6 +120,9 @@ class Field {
     fieldAreaHa: (json['fieldAreaHa'] ?? 0).toDouble(),
     farmId: json['farmId'] ?? 0,
     farmName: json['farmName'] ?? '',
+    limeLevel: json['limeLevel'] ?? 0,
+    sprayLevel: json['sprayLevel'] ?? 0,
+    weedLevel: json['weedLevel'] ?? 0,
   );
 }
 class SpecialOffer {

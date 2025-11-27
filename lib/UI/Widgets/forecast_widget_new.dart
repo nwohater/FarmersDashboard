@@ -28,8 +28,6 @@ class ForecastWidget extends StatelessWidget {
   });
 
   Widget _buildForecastColumn(String hour, String condition) {
-    final String imagePath = _getWeatherImage(condition);
-
     return Column(
       children: [
         Icon(Icons.access_time_outlined, color: Colors.blue.shade300, size: 22),
@@ -53,8 +51,6 @@ class ForecastWidget extends StatelessWidget {
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 12),
-        Icon(Icons.wb_sunny_outlined, color: Colors.amber.shade300, size: 22),
-        const SizedBox(height: 8),
         Text(
           'Weather',
           style: TextStyle(

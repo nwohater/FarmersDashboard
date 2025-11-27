@@ -18,6 +18,56 @@ class FieldWidget extends StatelessWidget {
     return 5; // fallback
   }
 
+  /// Convert fertilization/spray level to display string
+  /// Based on FS25 FieldState: 0 = 0%, 1 = 50%, 2 = 100%, 3 = 100%+
+  String _getFertilizationLabel(int level) {
+    switch (level) {
+      case 0:
+        return '0%';
+      case 1:
+        return '50%';
+      case 2:
+        return '100%';
+      case 3:
+        return '100%+';
+      default:
+        return '$level';
+    }
+  }
+
+  /// Convert lime level to display string
+  /// Based on FS25 FieldState: 0 = Needs Lime, 1 = Lime Applied, 2 = Well Limed, 3 = Fully Limed
+  String _getLimeLabel(int level) {
+    switch (level) {
+      case 0:
+        return 'Needs Lime';
+      case 1:
+        return 'Applied';
+      case 2:
+        return 'Well Limed';
+      case 3:
+        return 'Fully Limed';
+      default:
+        return '$level';
+    }
+  }
+
+  /// Convert weed level to display string
+  /// Based on FS25 FieldState: 0 = None, 1-3 = Light, 4-6 = Moderate, 7-9 = Jungle
+  String _getWeedLabel(int level) {
+    if (level == 0) {
+      return 'None';
+    } else if (level >= 1 && level <= 3) {
+      return 'Light';
+    } else if (level >= 4 && level <= 6) {
+      return 'Moderate';
+    } else if (level >= 7 && level <= 9) {
+      return 'Jungle';
+    } else {
+      return '$level';
+    }
+  }
+
   /// Calculate expected harvest month if still growing
   String? _expectedHarvestMonth(int growthState, int totalStages, int currentMonth) {
     if (growthState > 0 && growthState < totalStages) {
@@ -38,15 +88,22 @@ class FieldWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final acres = (field.fieldAreaHa * 2.47105).toStringAsFixed(2);
     final bool harvested = field.growthStateLabel.toLowerCase() == 'harvested';
-    final bool readyToHarvest = field.growthStateLabel.toLowerCase() == 'ready to harvest';
 
-    // Special handling for grass - check if it's the second harvest stage
+    // Special handling for grass - override "ready to harvest" at stage 3
     final bool isGrass = field.fruitType.toLowerCase() == 'grass';
-    final bool isSecondHarvest = isGrass && field.growthState == 3;
-    final bool isFirstHarvest = isGrass && readyToHarvest && field.growthState != 3;
+    final bool isGrassAtStage3 = isGrass && field.growthState == 3;
+
+    // For grass at stage 3, treat it as still growing (not ready to harvest)
+    final bool readyToHarvest = field.growthStateLabel.toLowerCase() == 'ready to harvest' && !isGrassAtStage3;
 
     // Dynamically parse total stages from the label
     final int totalStages = _parseTotalStages(field.growthStateLabel);
+
+    // First harvest: grass at growth state 4 (ready to harvest)
+    final bool isFirstHarvest = isGrass && readyToHarvest && field.growthState == 4;
+    // Second harvest: For now, we can't distinguish second harvest without tracking history
+    // This would need additional data from the server
+    final bool isSecondHarvest = false;
 
     // Only show expected harvest if not ready
     final String? expectedMonth = !readyToHarvest
@@ -79,7 +136,8 @@ class FieldWidget extends StatelessWidget {
     } else if (readyToHarvest) {
       statusColor = Colors.amber.shade400;
       statusIcon = Icons.agriculture;
-      displayLabel = field.growthStateLabel;
+      // Normalize "Ready to harvest" to "Ready To Harvest"
+      displayLabel = 'Ready To Harvest';
     } else {
       statusColor = Colors.green.shade400;
       statusIcon = Icons.spa_outlined;
@@ -151,6 +209,27 @@ class FieldWidget extends StatelessWidget {
                 'Area',
                 '$acres ac',
                 Colors.teal.shade300,
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _buildInfoChip(
+                'Lime',
+                _getLimeLabel(field.limeLevel),
+                Colors.purple.shade300,
+              ),
+              _buildInfoChip(
+                'Fertilizer',
+                _getFertilizationLabel(field.sprayLevel),
+                Colors.blue.shade300,
+              ),
+              _buildInfoChip(
+                'Weeds',
+                _getWeedLabel(field.weedLevel),
+                Colors.red.shade300,
               ),
             ],
           ),
