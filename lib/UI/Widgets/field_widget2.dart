@@ -5,7 +5,11 @@ class FieldWidget extends StatelessWidget {
   final Field field;
   final int currentMonth;
 
-  const FieldWidget({super.key, required this.field, required this.currentMonth});
+  const FieldWidget({
+    super.key,
+    required this.field,
+    required this.currentMonth,
+  });
 
   /// Parse total stages from the growthStateLabel (e.g., "6/7" -> 7)
   int _parseTotalStages(String label) {
@@ -18,66 +22,30 @@ class FieldWidget extends StatelessWidget {
     return 5; // fallback
   }
 
-  /// Convert fertilization/spray level to display string
-  /// Based on FS25 FieldState: 0 = 0%, 1 = 50%, 2 = 100%, 3 = 100%+
-  String _getFertilizationLabel(int level) {
-    switch (level) {
-      case 0:
-        return '0%';
-      case 1:
-        return '50%';
-      case 2:
-        return '100%';
-      case 3:
-        return '100%+';
-      default:
-        return '$level';
-    }
-  }
-
-  /// Convert lime level to display string
-  /// Based on FS25 FieldState: 0 = Needs Lime, 1 = Lime Applied, 2 = Well Limed, 3 = Fully Limed
-  String _getLimeLabel(int level) {
-    switch (level) {
-      case 0:
-        return 'Needs Lime';
-      case 1:
-        return 'Applied';
-      case 2:
-        return 'Well Limed';
-      case 3:
-        return 'Fully Limed';
-      default:
-        return '$level';
-    }
-  }
-
-  /// Convert weed level to display string
-  /// Based on FS25 FieldState: 0 = None, 1-3 = Light, 4-6 = Moderate, 7-9 = Jungle
-  String _getWeedLabel(int level) {
-    if (level == 0) {
-      return 'None';
-    } else if (level >= 1 && level <= 3) {
-      return 'Light';
-    } else if (level >= 4 && level <= 6) {
-      return 'Moderate';
-    } else if (level >= 7 && level <= 9) {
-      return 'Jungle';
-    } else {
-      return '$level';
-    }
-  }
-
   /// Calculate expected harvest month if still growing
-  String? _expectedHarvestMonth(int growthState, int totalStages, int currentMonth) {
+  String? _expectedHarvestMonth(
+    int growthState,
+    int totalStages,
+    int currentMonth,
+  ) {
     if (growthState > 0 && growthState < totalStages) {
       final monthsToHarvest = (totalStages - growthState) + 1;
       int harvestMonth = currentMonth + monthsToHarvest;
       if (harvestMonth > 12) harvestMonth -= 12;
 
       final monthNames = [
-        'January', 'February', 'March', 'April', 'May', 'June',
-        'July', 'August', 'September', 'October', 'November', 'December'
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December',
       ];
       return monthNames[harvestMonth - 1];
     }
@@ -94,25 +62,29 @@ class FieldWidget extends StatelessWidget {
     final bool isGrassAtStage3 = isGrass && field.growthState == 3;
 
     // For grass at stage 3, treat it as still growing (not ready to harvest)
-    final bool readyToHarvest = field.growthStateLabel.toLowerCase() == 'ready to harvest' && !isGrassAtStage3;
+    final bool readyToHarvest =
+        field.growthStateLabel.toLowerCase() == 'ready to harvest' &&
+        !isGrassAtStage3;
 
     // Dynamically parse total stages from the label
     final int totalStages = _parseTotalStages(field.growthStateLabel);
 
     // First harvest: grass at growth state 4 (ready to harvest)
-    final bool isFirstHarvest = isGrass && readyToHarvest && field.growthState == 4;
+    final bool isFirstHarvest =
+        isGrass && readyToHarvest && field.growthState == 4;
     // Second harvest: For now, we can't distinguish second harvest without tracking history
     // This would need additional data from the server
     final bool isSecondHarvest = false;
 
     // Only show expected harvest if not ready
-    final String? expectedMonth = !readyToHarvest
-        ? _expectedHarvestMonth(
-            field.growthState,
-            totalStages,
-            currentMonth,
-          )
-        : null;
+    final String? expectedMonth =
+        !readyToHarvest
+            ? _expectedHarvestMonth(
+              field.growthState,
+              totalStages,
+              currentMonth,
+            )
+            : null;
 
     // Determine status color and icon
     Color statusColor;
@@ -148,15 +120,12 @@ class FieldWidget extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 4),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: const Color(0xFF16213e).withOpacity(0.5),
+        color: const Color(0xFF16213e).withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: statusColor.withOpacity(0.3),
-          width: 1,
-        ),
+        border: Border.all(color: statusColor.withValues(alpha: 0.3), width: 1),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withValues(alpha: 0.2),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -179,11 +148,14 @@ class FieldWidget extends StatelessWidget {
               ),
               const Spacer(),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
-                  color: statusColor.withOpacity(0.2),
+                  color: statusColor.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: statusColor.withOpacity(0.4)),
+                  border: Border.all(color: statusColor.withValues(alpha: 0.4)),
                 ),
                 child: Text(
                   field.fruitType,
@@ -200,37 +172,8 @@ class FieldWidget extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildInfoChip(
-                'Growth',
-                displayLabel,
-                Colors.grey.shade400,
-              ),
-              _buildInfoChip(
-                'Area',
-                '$acres ac',
-                Colors.teal.shade300,
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _buildInfoChip(
-                'Lime',
-                _getLimeLabel(field.limeLevel),
-                Colors.purple.shade300,
-              ),
-              _buildInfoChip(
-                'Fertilizer',
-                _getFertilizationLabel(field.sprayLevel),
-                Colors.blue.shade300,
-              ),
-              _buildInfoChip(
-                'Weeds',
-                _getWeedLabel(field.weedLevel),
-                Colors.red.shade300,
-              ),
+              _buildInfoChip('Growth', displayLabel, Colors.grey.shade400),
+              _buildInfoChip('Area', '$acres ac', Colors.teal.shade300),
             ],
           ),
           if (expectedMonth != null) ...[
@@ -238,13 +181,17 @@ class FieldWidget extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
               decoration: BoxDecoration(
-                color: Colors.orange.shade900.withOpacity(0.3),
+                color: Colors.orange.shade900.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.calendar_today, size: 12, color: Colors.orange.shade300),
+                  Icon(
+                    Icons.calendar_today,
+                    size: 12,
+                    color: Colors.orange.shade300,
+                  ),
                   const SizedBox(width: 6),
                   Text(
                     "Est. Harvest: $expectedMonth",

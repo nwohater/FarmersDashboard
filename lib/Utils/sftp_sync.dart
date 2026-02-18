@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:dartssh2/dartssh2.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:farmerdashboard/Models/gamedata_model.dart';
@@ -10,7 +11,6 @@ class DownloadResult {
 
   DownloadResult(this.success, this.message);
 }
-
 
 Future<DownloadResult> downloadJsonFile(Map<String, dynamic> connection) async {
   try {
@@ -39,26 +39,24 @@ Future<DownloadResult> downloadJsonFile(Map<String, dynamic> connection) async {
 
     return DownloadResult(true, 'Download successful!');
   } catch (e) {
-    print('❌ Error in downloadJsonFile: $e');
+    debugPrint('❌ Error in downloadJsonFile: $e');
     return DownloadResult(false, 'Connection failed: $e');
   }
 }
-
-
-
 
 Future<GameData?> loadGameData() async {
   try {
     // Step 1: Get the application directory
     final directory = await getApplicationDocumentsDirectory();
-    final filePath = '${directory.path}/farmersDB.json'; // Ensure this matches where the file is saved
+    final filePath =
+        '${directory.path}/farmersDB.json'; // Ensure this matches where the file is saved
 
     // Step 2: Create the File object
     final file = File(filePath);
 
     // Step 3: Check if the file exists
     if (!file.existsSync()) {
-      print("File not found at $filePath");
+      debugPrint("File not found at $filePath");
       return null;
     }
 
@@ -71,8 +69,7 @@ Future<GameData?> loadGameData() async {
 
     return gameData;
   } catch (e) {
-    print("Error while loading GameData: $e");
+    debugPrint("Error while loading GameData: $e");
     return null;
   }
 }
-

@@ -81,6 +81,7 @@ class _DashBoardState extends State<DashBoard> with TickerProviderStateMixin {
     final connections = await db.getConnections();
 
     if (connections.isEmpty) {
+      if (!mounted) return;
       // No connections at all – let user create one
       await Navigator.push(
         context,
@@ -156,11 +157,11 @@ class _DashBoardState extends State<DashBoard> with TickerProviderStateMixin {
       ),
       centerTitle: true,
       title: const Text(
-        "Farm Dashboard",
+        "Farmers Dashboard",
         style: TextStyle(
           color: Colors.white,
           fontWeight: FontWeight.w300,
-          fontSize: 22,
+          fontSize: 20,
           letterSpacing: 1.5,
         ),
       ),
@@ -214,7 +215,11 @@ class _DashBoardState extends State<DashBoard> with TickerProviderStateMixin {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.cloud_off_outlined, size: 80, color: Colors.grey.shade700),
+              Icon(
+                Icons.cloud_off_outlined,
+                size: 80,
+                color: Colors.grey.shade700,
+              ),
               const SizedBox(height: 24),
               Text(
                 'No data available',
@@ -249,7 +254,10 @@ class _DashBoardState extends State<DashBoard> with TickerProviderStateMixin {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.teal.shade700,
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 12,
+                      ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
@@ -263,7 +271,10 @@ class _DashBoardState extends State<DashBoard> with TickerProviderStateMixin {
                     style: OutlinedButton.styleFrom(
                       foregroundColor: Colors.teal.shade300,
                       side: BorderSide(color: Colors.teal.shade700),
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 12,
+                      ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
@@ -292,180 +303,206 @@ class _DashBoardState extends State<DashBoard> with TickerProviderStateMixin {
     return Scaffold(
       appBar: appBar,
       backgroundColor: const Color(0xFF0f0f1e),
-      body: _fadeAnimation != null
-          ? FadeTransition(
-              opacity: _fadeAnimation!,
-              child: RefreshIndicator(
+      body:
+          _fadeAnimation != null
+              ? FadeTransition(
+                opacity: _fadeAnimation!,
+                child: RefreshIndicator(
+                  onRefresh: _loadData,
+                  color: Colors.teal.shade300,
+                  backgroundColor: const Color(0xFF1a1a2e),
+                  child: ListView(
+                    padding: const EdgeInsets.all(16.0),
+                    children: [
+                      if (_defaultConnection != null &&
+                          (_defaultConnection!['servername']
+                                  ?.toString()
+                                  .isNotEmpty ??
+                              false))
+                        Container(
+                          margin: const EdgeInsets.only(bottom: 16),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF1a1a2e),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: Colors.teal.shade900.withOpacity(0.3),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.dns_outlined,
+                                    color: Colors.teal.shade300,
+                                    size: 20,
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Text(
+                                    '${_defaultConnection!['servername']}',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w400,
+                                      color: Colors.grey.shade300,
+                                      letterSpacing: 0.5,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              IconButton(
+                                icon: Icon(
+                                  Icons.swap_horiz,
+                                  color: Colors.teal.shade300,
+                                  size: 20,
+                                ),
+                                onPressed: _pickServer,
+                                tooltip: 'Switch Server',
+                              ),
+                            ],
+                          ),
+                        ),
+                      DateWeatherWidget(
+                        date: date,
+                        time: _gameData!.time,
+                        condition: condition,
+                        temperature: temperatureF,
+                      ),
+                      if (_gameData!.weather.forecast.isNotEmpty) ...[
+                        const SizedBox(height: 8),
+                        ForecastWidget(
+                          currentWeatherData: _gameData!.weather,
+                          forecastDynamicItems: _gameData!.weather.forecast,
+                        ),
+                      ],
+                      const SizedBox(height: 16),
+                      if (validFarms.isNotEmpty) ...[
+                        ...validFarms.asMap().entries.map((entry) {
+                          final index = entry.key;
+                          final farm = entry.value;
+                          final fieldsForFarm =
+                              _gameData!.fields
+                                  .where(
+                                    (field) =>
+                                        field.farmName.trim() ==
+                                        farm.name.trim(),
+                                  )
+                                  .toList();
+
+                          return TweenAnimationBuilder<double>(
+                            duration: Duration(
+                              milliseconds: 400 + (index * 100),
+                            ),
+                            tween: Tween(begin: 0.0, end: 1.0),
+                            curve: Curves.easeOut,
+                            builder: (context, value, child) {
+                              return Transform.translate(
+                                offset: Offset(0, 20 * (1 - value)),
+                                child: Opacity(opacity: value, child: child),
+                              );
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.only(bottom: 16.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  FarmWidget(
+                                    farmName: farm.name,
+                                    money: farm.money,
+                                    loanAmount: farm.loan,
+                                  ),
+                                  if (fieldsForFarm.isNotEmpty) ...[
+                                    const SizedBox(height: 8),
+                                    ...fieldsForFarm.map((field) {
+                                      return Padding(
+                                        padding: const EdgeInsets.only(
+                                          bottom: 8.0,
+                                        ),
+                                        child: FieldWidget(
+                                          field: field,
+                                          currentMonth:
+                                              _gameData!.date.month - 1,
+                                        ),
+                                      );
+                                    }),
+                                  ],
+                                ],
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ] else ...[
+                        Padding(
+                          padding: const EdgeInsets.all(32.0),
+                          child: Center(
+                            child: Text(
+                              'No farms to display',
+                              style: TextStyle(
+                                color: Colors.grey.shade600,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                      if (specialOffers.isNotEmpty) ...[
+                        const SizedBox(height: 8),
+                        ...specialOffers.asMap().entries.map((entry) {
+                          final index = entry.key;
+                          final offer = entry.value;
+                          return TweenAnimationBuilder<double>(
+                            duration: Duration(
+                              milliseconds: 600 + (index * 100),
+                            ),
+                            tween: Tween(begin: 0.0, end: 1.0),
+                            curve: Curves.easeOut,
+                            builder: (context, value, child) {
+                              return Transform.translate(
+                                offset: Offset(0, 20 * (1 - value)),
+                                child: Opacity(opacity: value, child: child),
+                              );
+                            },
+                            child: SpecialOfferWidget(offer: offer),
+                          );
+                        }),
+                      ] else ...[
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 32.0),
+                          child: Center(
+                            child: Text(
+                              'No deals available at the moment',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                      const SizedBox(height: 32),
+                    ],
+                  ),
+                ),
+              )
+              : RefreshIndicator(
                 onRefresh: _loadData,
                 color: Colors.teal.shade300,
                 backgroundColor: const Color(0xFF1a1a2e),
                 child: ListView(
                   padding: const EdgeInsets.all(16.0),
                   children: [
-              if (_defaultConnection != null &&
-                  (_defaultConnection!['servername']?.toString().isNotEmpty ?? false))
-                Container(
-                  margin: const EdgeInsets.only(bottom: 16),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF1a1a2e),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.teal.shade900.withOpacity(0.3)),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(Icons.dns_outlined, color: Colors.teal.shade300, size: 20),
-                          const SizedBox(width: 12),
-                          Text(
-                            '${_defaultConnection!['servername']}',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w400,
-                              color: Colors.grey.shade300,
-                              letterSpacing: 0.5,
-                            ),
-                          ),
-                        ],
+                    Center(
+                      child: CircularProgressIndicator(
+                        color: Colors.teal.shade300,
                       ),
-                      IconButton(
-                        icon: Icon(Icons.swap_horiz, color: Colors.teal.shade300, size: 20),
-                        onPressed: _pickServer,
-                        tooltip: 'Switch Server',
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              DateWeatherWidget(
-                date: date,
-                time: _gameData!.time,
-                condition: condition,
-                temperature: temperatureF,
               ),
-              if (_gameData!.weather.forecast.isNotEmpty) ...[
-                const SizedBox(height: 8),
-                ForecastWidget(
-                  currentWeatherData: _gameData!.weather,
-                  forecastDynamicItems: _gameData!.weather.forecast,
-                ),
-              ],
-              const SizedBox(height: 16),
-              if (validFarms.isNotEmpty) ...[
-                ...validFarms.asMap().entries.map((entry) {
-                  final index = entry.key;
-                  final farm = entry.value;
-                  final fieldsForFarm = _gameData!.fields
-                      .where((field) => field.farmName.trim() == farm.name.trim())
-                      .toList();
-
-                  return TweenAnimationBuilder<double>(
-                    duration: Duration(milliseconds: 400 + (index * 100)),
-                    tween: Tween(begin: 0.0, end: 1.0),
-                    curve: Curves.easeOut,
-                    builder: (context, value, child) {
-                      return Transform.translate(
-                        offset: Offset(0, 20 * (1 - value)),
-                        child: Opacity(
-                          opacity: value,
-                          child: child,
-                        ),
-                      );
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          FarmWidget(
-                            farmName: farm.name,
-                            money: farm.money,
-                            loanAmount: farm.loan,
-                          ),
-                          if (fieldsForFarm.isNotEmpty) ...[
-                            const SizedBox(height: 8),
-                            ...fieldsForFarm.map((field) {
-                              return Padding(
-                                padding: const EdgeInsets.only(bottom: 8.0),
-                                child: FieldWidget(
-                                  field: field,
-                                  currentMonth: _gameData!.date.month - 1,
-                                ),
-                              );
-                            }).toList(),
-                          ],
-                        ],
-                      ),
-                    ),
-                  );
-                }).toList(),
-              ] else ...[
-                Padding(
-                  padding: const EdgeInsets.all(32.0),
-                  child: Center(
-                    child: Text(
-                      'No farms to display',
-                      style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
-                    ),
-                  ),
-                ),
-              ],
-              if (specialOffers.isNotEmpty) ...[
-                const SizedBox(height: 8),
-                ...specialOffers.asMap().entries.map((entry) {
-                  final index = entry.key;
-                  final offer = entry.value;
-                  return TweenAnimationBuilder<double>(
-                    duration: Duration(milliseconds: 600 + (index * 100)),
-                    tween: Tween(begin: 0.0, end: 1.0),
-                    curve: Curves.easeOut,
-                    builder: (context, value, child) {
-                      return Transform.translate(
-                        offset: Offset(0, 20 * (1 - value)),
-                        child: Opacity(
-                          opacity: value,
-                          child: child,
-                        ),
-                      );
-                    },
-                    child: SpecialOfferWidget(offer: offer),
-                  );
-                }).toList(),
-              ] else ...[
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 32.0),
-                  child: Center(
-                    child: Text(
-                      'No deals available at the moment',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-              const SizedBox(height: 32),
-            ],
-          ),
-        ),
-      )
-          : RefreshIndicator(
-              onRefresh: _loadData,
-              color: Colors.teal.shade300,
-              backgroundColor: const Color(0xFF1a1a2e),
-              child: ListView(
-                padding: const EdgeInsets.all(16.0),
-                children: [
-                  Center(
-                    child: CircularProgressIndicator(
-                      color: Colors.teal.shade300,
-                    ),
-                  ),
-                ],
-              ),
-            ),
     );
   }
 }
